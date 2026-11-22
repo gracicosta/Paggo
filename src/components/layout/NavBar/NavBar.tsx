@@ -28,13 +28,13 @@ export function NavBar() {
                 <section className={!collapsed ? styles.sidebarHeader : styles.sidebarHeaderCollapsed}>
                     <article className={!collapsed ? styles.brandContainer : styles.brandContainerCollapsed}>
                         <motion.div variants={itemVariants} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={smoothSpring} className={styles.brandBox}>
-                            <img src={logotipo} alt="Logotipo do ConsumIQ" className={styles.logotipo} />
+                            <img src={logotipo} alt="Logotipo do Paggo" className={styles.logotipo} />
                         </motion.div>
 
                         <AnimatePresence initial={false}>
                             {!collapsed && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, width: "auto" }} exit={{ opacity: 0, width: 0 }} transition={{ duration: 0.50, ease: "easeOut" }} className={styles.brandTextWrap}>
-                                    <h2 className={styles.title}>ConsumIQ</h2>
+                                    <h2 className={styles.title}>Paggo</h2>
                                     <p className={styles.subTitle}>Finanças Inteligentes</p>
                                 </motion.div>
                             )}

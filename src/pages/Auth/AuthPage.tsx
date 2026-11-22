@@ -61,12 +61,12 @@ export const AuthPage: React.FC = () => {
         transition={{ duration: 0.4 }}
         className={styles.authContainer}
       >
-        {/* Painel Esquerdo: Identidade do ConsumIQ */}
+        {/* Painel Esquerdo: Identidade do Paggo */}
         <div className={styles.heroPanel}>
           <div className={styles.heroBrand}>
-            <img src={logotipo} alt="ConsumIQ" className={styles.brandLogo} />
+            <img src={logotipo} alt="Paggo" className={styles.brandLogo} />
             <div className={styles.brandText}>
-              <h1 className={styles.brandTitle}>ConsumIQ</h1>
+              <h1 className={styles.brandTitle}>Paggo</h1>
               <span className={styles.brandSubtitle}>Finanças Inteligentes</span>
             </div>
           </div>
@@ -77,7 +77,7 @@ export const AuthPage: React.FC = () => {
               <span className={styles.heroGradientText}>possibilidades reais.</span>
             </h2>
             <p className={styles.heroParagraph}>
-              Adeus suposições. O ConsumIQ calibra suas despesas fixas, tetos por categoria e objetivos de poupança com base na sua renda líquida real.
+              Adeus suposições. O Paggo calibra suas despesas fixas, tetos por categoria e objetivos de poupança com base na sua renda líquida real.
             </p>
 
             <div className={styles.featureList}>
@@ -97,7 +97,7 @@ export const AuthPage: React.FC = () => {
           </div>
 
           <div className={styles.heroFooter}>
-            ConsumIQ © 2026 · Sistema Inteligente de Análise Financeira
+            Paggo © 2026 · Sistema Inteligente de Análise Financeira
           </div>
         </div>
 

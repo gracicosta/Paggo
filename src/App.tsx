@@ -23,7 +23,7 @@ function AppContent() {
           fontWeight: 600,
         }}
       >
-        Carregando ConsumIQ...
+        Carregando Paggo...
       </div>
     );
   }

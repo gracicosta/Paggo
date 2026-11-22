@@ -30,7 +30,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
         <div>
           <h3 className={styles.stepTitle}>Tudo pronto, {name}! Seu perfil financeiro foi calibrado.</h3>
           <p className={styles.stepDescription}>
-            Confira o raio-x do seu planejamento antes de ativar o ConsumIQ com seus dados reais.
+            Confira o raio-x do seu planejamento antes de ativar o Paggo com seus dados reais.
           </p>
         </div>
       </div>

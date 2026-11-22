@@ -112,7 +112,7 @@ export const OnboardingWizard: React.FC = () => {
       >
         <div className={styles.wizardHeader}>
           <div className={styles.topBrandRow}>
-            <span className={styles.brandLogoTitle}>ConsumIQ · Onboarding Financeiro</span>
+            <span className={styles.brandLogoTitle}>Paggo · Onboarding Financeiro</span>
             <span className={styles.stepCounterBadge}>Etapa {currentStep} de 5</span>
           </div>
 
