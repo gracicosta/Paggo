@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import styles from './NavBar.module.css'
 import { NAV_SECTIONS } from './navItems'
+import { useAuth } from '../../../context/AuthContext'
 
 import logotipo from '../../../assets/images/logotipo-dark.png'
 
@@ -12,13 +13,14 @@ import { GoGear } from "react-icons/go";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { CiUser } from "react-icons/ci";
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-
+import { LuLogOut } from "react-icons/lu";
 
 export function NavBar() {
-
+    const { user, logout } = useAuth();
     const [active, setActive] = useState("Dashboard");
     const [collapsed, setCollapsed] = useState(false);
     
+    const displayName = user?.name ? user.name : "Visitante";
 
     return (
         <motion.aside initial={{ width: 96, opacity: 0 }} animate={{ width: collapsed ? 84 : 240, opacity: 1 }} transition={smoothSpring} className={!collapsed ? styles.asideBar : styles.asideBarCollapsed }>
@@ -58,7 +60,7 @@ export function NavBar() {
                                         {item.icon}
                                     </motion.span>
 
-                                    <AnimatePresence initial={false}  mode="popLayout">
+                                    <AnimatePresence initial={false} mode="popLayout">
                                         {!collapsed && (
                                             <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ 
                                                 width: { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
@@ -76,14 +78,23 @@ export function NavBar() {
 
                 <motion.section variants={itemVariants} className={styles.navContainerProfile}>
                     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className={!collapsed ? styles.containerButtonsActions : styles.containerButtonsActionsCollapsed}>
-                        <motion.button layout title='notificações' className={styles.buttonActions}>
+                        <motion.button layout title='Notificações' className={styles.buttonActions}>
                             <IoMdNotificationsOutline size={collapsed ? 25 : 24} />
                         </motion.button>
                         <motion.button layout title='Configurações' className={styles.buttonActions}>
                             <GoGear size={collapsed ? 25 : 24} />
                         </motion.button>
-                        <motion.button layout title='dark-mode' className={styles.buttonActions}>
+                        <motion.button layout title='Dark Mode' className={styles.buttonActions}>
                             <MdOutlineDarkMode size={collapsed ? 25 : 24} />
+                        </motion.button>
+                        <motion.button 
+                            layout 
+                            title='Sair da conta' 
+                            onClick={logout}
+                            className={styles.buttonActions}
+                            style={{ color: '#f87171' }}
+                        >
+                            <LuLogOut size={collapsed ? 23 : 22} />
                         </motion.button>
                     </motion.div>
 
@@ -92,8 +103,10 @@ export function NavBar() {
                             <CiUser className={styles.logoProfile} />
                         </motion.div>
                         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={smoothSpring} className={`${styles.infoProfile} ${styles.textCollapse} ${!collapsed ? styles.text : styles.textDisabled}`}>
-                            <p className={styles.nameProfile}>Olá, Visitante</p>
-                            <p className={styles.versionProfile}>Smart</p>
+                            <p className={styles.nameProfile} title={displayName}>
+                                {displayName.length > 15 ? `${displayName.slice(0, 15)}...` : displayName}
+                            </p>
+                            <p className={styles.versionProfile}>Perfil Calibrado</p>
                         </motion.div>
                     </div>
                 </motion.section>
