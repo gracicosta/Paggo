@@ -1,0 +1,42 @@
+@reference "../../index.css";
+
+.main {
+    @apply w-full;
+}
+
+/* Section do header, onde contém titulo e filtro de meses */
+.headerMain {
+    @apply flex justify-between items-center w-full h-auto border-b border-gray-200 pb-6 mb-6;
+}
+
+.titleHeader {
+    @apply text-2xl font-bold leading-10;
+}
+
+.spanTitleHeader {
+    @apply text-secondary;
+}
+
+.subtitleHeader {
+    @apply text-sm;
+}
+
+.statsContainer {
+    @apply grid grid-cols-3 gap-4;
+}
+
+.containerGrafic {
+    @apply h-auto;
+}
+
+.containerTransition {
+    @apply grid mt-6 grid-cols-2 gap-4;
+}
+
+.containerCategory {
+    @apply grid grid-cols-2 gap-4 mt-6 items-center-safe;
+}
+
+.widgetsGrid {
+    @apply flex flex-col gap-3.5 justify-between mt-6;
+}

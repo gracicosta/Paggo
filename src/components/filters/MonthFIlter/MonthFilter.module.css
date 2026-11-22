@@ -1,0 +1,17 @@
+@reference "../../index.css";
+
+.monthFilterContainer {
+    @apply relative z-50 rounded-lg bg-white p-3 shadow-sm border-soft hover:bg-white-bg;
+}
+
+.buttonFilter {
+    @apply flex gap-2 items-center text-text-secondary font-semibold;
+}
+
+.navMonthFilter {
+    @apply absolute right-0 top-full w-full mt-2 z-999 bg-white min-w-48 rounded-lg shadow-lg border border-gray-200 overflow-hidden;
+}
+
+.buttonMonth {
+  @apply w-full px-4 py-2 text-left text-text-secondary hover:bg-blue-50 transition-colors;
+}

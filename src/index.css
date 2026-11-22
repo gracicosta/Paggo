@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+* {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+@theme {
+  --color-luminous: oklch(0.92 0.005 264);
+  --color-white-bg: #F8FAFC;
+  --color-primary: #2563EB;
+  --color-secondary: #1E40AF;
+  --color-third: #1A3696;
+  --color-blue-soft-primary: rgba(59, 130, 246, 0.3);
+  --color-blue-soft-secondary: rgba(59, 130, 246, 0.25);
+  --color-blue-soft-profile: rgba(59, 130, 246, 0.15);
+  --color-border: #e2e8f0;
+  --color-button-soft: #DBEAFE;
+  --color-soft: #93C5FD;
+  --color-text-secondary: #1E3A8A;
+
+  --shadow-soft: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-wrapper *:focus,
+.recharts-wrapper *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}

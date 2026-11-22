@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.layout {
+  @apply flex h-screen overflow-hidden bg-[#F9FAFB];
+}
+
+.content {
+  @apply flex-1 overflow-y-auto w-full py-6 px-12;
+}

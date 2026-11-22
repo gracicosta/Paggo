@@ -1,0 +1,45 @@
+@reference "../../index.css";
+
+.containerSubscription {
+    @apply flex flex-col gap-4 bg-white py-10.5 px-8 shadow-lg rounded-lg border border-gray-100 h-auto;
+}
+
+.containerHeader {
+    @apply flex items-center justify-between;
+}
+
+.containerHeader p {
+    @apply text-lg font-bold text-gray-600;
+}
+
+.containerHeader a {
+    @apply flex items-center gap-2 text-sm font-bold text-indigo-700 hover:text-indigo-500;
+}
+
+.subscriptionsList {
+    @apply flex flex-col gap-4 p-2;
+}
+
+.subscriptionCard {
+    @apply p-3 shadow-sm gap-4 rounded-lg border border-gray-100 hover:shadow-lg;
+}
+
+.subscriptionContent {
+    @apply flex items-center gap-3 text-sm text-gray-700;
+}
+
+.icon {
+    @apply text-2xl;
+}
+
+.contentDescription {
+    @apply ml-auto;
+}
+
+.subscriptionDate {
+    @apply text-xs text-gray-400;
+}
+
+.subscriptionName {
+    @apply pl-4;
+}

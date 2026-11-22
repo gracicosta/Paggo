@@ -1,0 +1,53 @@
+@reference "../../index.css"; 
+
+.containerTransition {
+    @apply flex flex-col gap-5 bg-white rounded-lg shadow-xl mt-5 py-6 px-8 border border-gray-100;
+}
+
+.containerHeader {
+    @apply flex items-center justify-between;
+}
+
+.containerHeader p {
+    @apply text-lg font-bold text-gray-600;
+}
+
+.containerHeader a {
+    @apply flex items-center gap-2 text-sm font-bold text-indigo-700 hover:text-indigo-500;
+}
+
+.transitionList {
+    @apply flex flex-col gap-4 p-2;
+}
+
+.transitionCard {
+    @apply flex items-center py-3 px-5 shadow-sm gap-4 rounded-lg hover:shadow-lg;
+}
+
+.transitionIcon {
+    @apply p-2.5 rounded-lg shadow-xs;
+}
+
+.transitionInfo {
+    @apply flex flex-col;
+}
+
+.transitionInfo p:first-child {
+    @apply text-sm;
+}
+
+.transitionInfo p:last-child {
+    @apply text-xs text-gray-700;
+}
+
+.transitionPrice {
+    @apply ml-auto;
+}
+
+.positive {
+    @apply text-green-500;
+}
+
+.negative {
+    @apply text-red-500;
+}

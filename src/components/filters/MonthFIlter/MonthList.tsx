@@ -1,0 +1,15 @@
+export const months = [
+    "Janeiro 2026",
+    "Fevereiro 2026",
+    "Março 2026",
+    "Abril 2026",
+    "Maio 2026",
+    "Junho 2026",
+    "Julho 2026",
+    "Agosto 2026",
+    "Setembro 2026",
+    "Outubro 2026",
+    "Novembro 2026",
+    "Dezembro 2026",
+    "Todos os meses",
+]

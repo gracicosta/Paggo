@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+.containerBillsToPay {
+    @apply flex flex-col gap-5 bg-white rounded-lg shadow-xl mt-5 py-6 px-8 border border-gray-100;
+}
+
+.containerHeader {
+    @apply flex items-center justify-between;
+}
+
+.containerHeader p {
+    @apply text-lg font-bold text-gray-600;
+}
+
+.containerHeader a {
+    @apply flex items-center gap-2 text-sm font-bold text-indigo-700 hover:text-indigo-500;
+}
+
+.billsToPayList {
+    @apply flex flex-col gap-4 p-2;
+}
+
+.billsToPayCard {
+    @apply flex items-center py-3 px-5 shadow-sm gap-4 rounded-lg hover:shadow-lg;
+}
+
+.billsToPayIcon {
+    @apply p-2.5 rounded-lg shadow-xs;
+}
+
+.billsToPayInfo {
+    @apply flex flex-col;
+}
+
+.billsToPayInfo p:first-child {
+    @apply text-sm;
+}
+
+.billsToPayInfo p:last-child {
+    @apply text-xs text-gray-700;
+}
+
+.billsToPayPrice {
+    @apply ml-auto;
+}
+
+.paymentAmount {
+    @apply text-red-500;
+}

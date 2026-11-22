@@ -1,0 +1,49 @@
+@reference "../../index.css"; 
+
+.containerCategory {
+    @apply flex flex-col gap-5 bg-white rounded-lg shadow-xl mt-5 py-6 px-8 border border-gray-100;
+}
+
+.containerHeader {
+    @apply flex items-center justify-between;
+}
+
+.containerHeader p {
+    @apply text-lg font-bold text-gray-600;
+}
+
+.containerHeader a {
+    @apply flex items-center gap-2 text-sm font-bold text-indigo-700 hover:text-indigo-500;
+}
+
+.categoryList {
+    @apply flex flex-col;
+}
+
+.categoryCard {
+    @apply flex flex-col gap-1.5 p-2 rounded-xl;
+}
+
+.categoryItem {
+    @apply flex items-center gap-2 text-sm text-gray-700;
+}
+
+.percentage {
+    @apply ml-auto;
+}
+
+.progressBar {
+    @apply h-2 bg-gray-100 rounded-xl;
+}
+
+.progressFill {
+    @apply h-full rounded-xl;
+}
+
+.limit {
+    @apply flex justify-between text-gray-700;
+}
+
+.limit span {
+    @apply text-sm;
+}

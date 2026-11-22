@@ -1,0 +1,164 @@
+@reference "../../index.css";
+
+.asideBar {
+    @apply h-screen p-2 
+    bg-blue-950 border-l shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)]
+    z-20;
+}
+
+.asideBarCollapsed {
+    @apply flex flex-col 
+    h-screen p-2
+    bg-blue-950 border-l shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)]
+    z-20;
+}
+
+.asideInner {
+  @apply flex flex-col h-full;
+}
+
+/* Header do aside onde contém titulo, subtitulo, logotipo e botão toggle */
+.sidebarHeader {
+    @apply relative flex flex-row justify-between items-center pt-2 pb-5 pr-2 mb-4 border-b border-gray-500;
+}
+
+.sidebarHeaderCollapsed {
+    @apply relative flex flex-col justify-center items-center pb-2 mb-2 gap-2 border-b border-gray-200;
+}
+
+.brandContainer {
+    @apply flex items-center gap-2 min-w-0;
+}
+
+.brandContainerCollapsed {
+  @apply flex justify-center items-center;
+}
+
+.buttonToggle {
+    @apply absolute top-14 -right-5 w-7 h-7 bg-white border border-gray-300 rounded-full flex items-center justify-center shadow-sm hover:border-primary hover:text-primary transition-colors;
+}
+
+.brandBox {
+  @apply shrink-0;
+}
+
+.brandTextWrap {
+  @apply overflow-hidden whitespace-nowrap;
+}
+
+.logotipo {
+    @apply w-18 h-18;
+}
+
+.title {
+    @apply font-bold text-white text-xl leading-tight;
+}
+
+.subTitle {
+    @apply text-xs text-luminous;
+}
+
+.textCollapse {
+  @apply overflow-hidden whitespace-nowrap;
+}
+
+.text {
+  @apply opacity-100 max-w-40 translate-x-0;
+}
+
+.textDisabled {
+  @apply opacity-0 max-w-0 -translate-x-2;
+}
+
+/* Navegação */
+.nav {
+    @apply flex flex-col gap-4 mt-4; 
+}
+
+.containerNav {
+    @apply flex flex-col gap-2 px-2;
+}
+
+.containerNavCollapsed {
+    @apply mx-2;
+}
+
+.categoryTitle {
+    @apply text-xs text-gray-300 uppercase;
+}
+
+.buttonList {
+    @apply w-full flex items-center p-2 rounded-lg transition-colors cursor-pointer;
+}
+
+.buttonListActive {
+    @apply text-luminous bg-blue-soft-secondary shadow-xl;
+}
+
+.buttonListDisabled {
+    @apply shadow-sm text-luminous hover:bg-sky-700;
+}
+
+.centerButton {
+    @apply justify-center;
+}
+
+.justifyStartButton {
+    @apply justify-start gap-3;
+}
+
+.iconButtonNav {
+    @apply w-8 h-8 flex items-center justify-center rounded-md bg-white border border-slate-100 shadow-sm shrink-0 text-gray-800;
+}
+
+.iconButtonNavActive {
+    @apply border-blue-100 text-primary;
+}
+
+/* Profile */
+.navContainerProfile {
+    @apply flex flex-col gap-4 mt-auto border-t border-gray-500 pt-3;
+}
+
+/* Botões de ações */
+.containerButtonsActions {
+    @apply flex gap-3 py-2;
+}
+
+.containerButtonsActionsCollapsed {
+    @apply flex flex-col justify-center items-center gap-5 py-2;
+}
+
+.buttonActions {
+  @apply text-sky-600 hover:text-primary transition-colors cursor-pointer;
+}
+
+
+/* Sessão do perfil */
+.containerProfile {
+    @apply flex gap-2 cursor-pointer items-center;
+}
+
+.containerProfileCollapsed {
+    @apply flex justify-center;
+}
+
+.imageProfile {
+    @apply flex items-center justify-center w-10 h-10 rounded-full bg-sky-900 text-luminous border border-blue-soft-profile hover:scale-110 transition-transform duration-300;
+}
+
+.logoProfile {
+    @apply w-6 h-6;
+}
+
+.infoProfile {
+  @apply overflow-hidden whitespace-nowrap;
+}
+
+.nameProfile {
+    @apply text-sm text-luminous;
+}
+
+.versionProfile {
+    @apply text-xs text-sky-500;
+}

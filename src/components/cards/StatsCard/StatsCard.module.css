@@ -1,0 +1,70 @@
+@reference "../../index.css";
+
+.statsCardContent {
+    @apply relative border border-gray-200 shadow-lg p-4 rounded-lg bg-white;
+}
+
+.floatingIcon {
+    @apply absolute top-4 right-4 border p-2 rounded-lg ;
+}
+
+/* Card Verde */
+.green .floatingIcon {
+    @apply border-green-500/30 bg-green-500/10 text-green-500;
+}
+
+.green .trendIcon,
+.green .percentageValue,
+.green .totalValue{
+    @apply text-green-500;
+}
+
+/* Card Vermelho */
+.red .floatingIcon {
+    @apply border-red-500/30 bg-red-500/10 text-red-500;
+}
+
+.red .trendIcon,
+.red .percentageValue,
+.red .totalValue {
+    @apply text-red-500;
+}
+
+/* Card azul */
+.blue .floatingIcon  {
+    @apply border-blue-500/30 bg-blue-500/10 text-blue-500;
+}
+
+.blue .trendIcon,
+.blue .totalValue {
+    @apply text-blue-500;
+}
+
+/* Informações do Card */
+.statsCardInfo {
+    @apply flex flex-col gap-4;
+}
+
+.statsTitle {
+    @apply uppercase text-xs font-semibold text-gray-600;
+}
+
+.totalValue {
+    @apply text-3xl font-semibold;
+}
+
+.valueSection {
+    @apply flex flex-col gap-3;
+}
+
+.trendIndicator {
+    @apply flex items-center gap-1;
+}
+
+.trendDescription {
+    @apply flex items-center gap-2 text-sm text-gray-700;
+}
+
+.percentageValue {
+    @apply text-base;
+}
