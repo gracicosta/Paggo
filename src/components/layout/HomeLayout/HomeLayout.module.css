@@ -1,0 +1,100 @@
+/* Cores da página principal (modo claro). Os componentes filhos usam estas variáveis. */
+.shell {
+  --bg: #f6f4fc;
+  --surface: #ffffff;
+  --border: #e9e5f5;
+  --text: #17122b;
+  --muted: #6b6684;
+  --soft: #f4f0ff;
+  --track: #eeeaf8;
+  --link: #6d28d9;
+  --ok: #059669;
+  --ok-bg: #d1fae5;
+  --bad: #e11d48;
+  --bad-bg: #ffe4e6;
+  --warn: #b45309;
+  --card-shadow: 0 1px 2px rgba(23, 18, 43, 0.04), 0 8px 24px rgba(76, 29, 149, 0.05);
+  --insight-bg: linear-gradient(160deg, #f3edff, #ffffff);
+  --insight-border: #ddd3fe;
+  --insight-tag: #7c3aed;
+  --insight-accent: #9333ea;
+  --insight-btn-bg: linear-gradient(135deg, #7c3aed, #a855f7);
+  --insight-btn-text: #ffffff;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.dark {
+  --bg: #0e0a1c;
+  --surface: #17122b;
+  --border: #2a2344;
+  --text: #f5f3fc;
+  --muted: #a29cbd;
+  --soft: #211a3b;
+  --track: #2a2344;
+  --link: #c4b5fd;
+  --ok: #34d399;
+  --ok-bg: rgba(16, 185, 129, 0.15);
+  --bad: #fb7185;
+  --bad-bg: rgba(244, 63, 94, 0.15);
+  --warn: #fbbf24;
+  --card-shadow: none;
+  --insight-bg: linear-gradient(160deg, #2b1a55, #1b1336);
+  --insight-border: #3b2a6b;
+  --insight-tag: #e9d5ff;
+  --insight-accent: #f0abfc;
+  --insight-btn-bg: #ffffff;
+  --insight-btn-text: #6d28d9;
+}
+
+/* index.css aplica outra fonte em "*": aqui a página usa a fonte do design */
+.shell,
+.shell * {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Modo para daltônicos: paleta Okabe-Ito (azul = bom, laranja/vermelhão = atenção) */
+.colorblind {
+  --ok: #0072b2;
+  --ok-bg: rgba(0, 114, 178, 0.12);
+  --bad: #d55e00;
+  --bad-bg: rgba(213, 94, 0, 0.12);
+  --warn: #9a6a00;
+}
+
+.dark.colorblind {
+  --ok: #56b4e9;
+  --ok-bg: rgba(86, 180, 233, 0.16);
+  --bad: #f5a05a;
+  --bad-bg: rgba(230, 159, 0, 0.16);
+  --warn: #f0e442;
+}
+
+.inner {
+  padding: 0 24px 20px;
+}
+
+/* Notebook e telas maiores: tudo cabe na altura da tela, sem scroll */
+@media (min-width: 1181px) and (min-height: 640px) {
+  .shell {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 620px) {
+  .inner {
+    padding: 0 16px 24px;
+  }
+}

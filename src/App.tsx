@@ -1,8 +1,7 @@
 import './App.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
-import { NavBar } from './components/layout/NavBar/NavBar';
-import { Dashboard } from './pages/Dashboard/Dashboard';
+import { HomeLayout } from './components/layout/HomeLayout/HomeLayout';
 import { AuthPage } from './pages/Auth/AuthPage';
 import { OnboardingWizard } from './components/auth/OnboardingWizard/OnboardingWizard';
 
@@ -38,12 +37,7 @@ function AppContent() {
 
   return (
     <FinanceProvider>
-      <div className="layout">
-        <NavBar />
-        <div className="content">
-          <Dashboard />
-        </div>
-      </div>
+      <HomeLayout />
     </FinanceProvider>
   );
 }
