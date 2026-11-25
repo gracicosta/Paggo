@@ -36,6 +36,30 @@ export interface PiggyBankItemModel {
   progressColor: string;
 }
 
+/** Um passo do plano que a IA monta no fim do onboarding. */
+export interface AiPlanAction {
+  /** Texto principal; o trecho entre ** ** aparece em negrito. */
+  text: string;
+  detail: string;
+  tag: 'Meta' | 'Economia' | 'Dica' | 'Atenção';
+}
+
+/** Respostas do onboarding que não cabem nos campos do painel. */
+export interface OnboardingAnswers {
+  /** De onde vem a renda (salario, extras, mei, aposentadoria, pensao, outro). */
+  incomeSources: string[];
+  /** Dia em que a renda costuma cair (null = varia ou não informado). */
+  payday: number | null;
+  /** Prazo da primeira meta, em meses (null = pulou a meta). */
+  goalMonths: number | null;
+  /** Passos que a pessoa pulou (2, 4, 5 ou 6). */
+  skippedSteps: number[];
+  /** Plano gerado no passo 7. */
+  plan: AiPlanAction[];
+  /** Data e hora (ISO) em que terminou o onboarding. */
+  completedAt: string;
+}
+
 export interface UserFinancialProfile {
   salary: number;
   extraIncome: number;
@@ -43,6 +67,8 @@ export interface UserFinancialProfile {
   subscriptions: SubscriptionItem[];
   categoryBudgets: CategoryBudgetItem[];
   piggyBanks: PiggyBankItemModel[];
+  /** Preenchido pelo onboarding (a conta demo não tem). */
+  onboarding?: OnboardingAnswers;
 }
 
 /** Dados pessoais pedidos no passo 2 do cadastro ("Sobre você"). */

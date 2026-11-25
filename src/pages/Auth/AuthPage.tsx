@@ -15,7 +15,7 @@ import { useAuth } from '../../context/AuthContext';
 import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
 import logo from '../../assets/images/paggo-logo.png';
 import photo from '../../assets/images/login-cofrinho.jpg';
-import { loadPrefs, isValidEmail, pageClassName, PREFS_KEY, REMEMBER_KEY, FONT_STEPS, type Prefs } from './authPrefs';
+import { loadPrefs, mergePrefs, isValidEmail, pageClassName, PREFS_KEY, REMEMBER_KEY, FONT_STEPS, type Prefs } from './authPrefs';
 import { AccessibilityBar, GoogleIcon } from './AuthWidgets';
 import { SignupPage } from './SignupPage';
 import styles from './AuthPage.module.css';
@@ -50,7 +50,7 @@ export const AuthPage: React.FC = () => {
     }
   }, [prefs]);
 
-  const updatePrefs = (next: Partial<Prefs>) => setPrefs((p) => ({ ...p, ...next }));
+  const updatePrefs = (next: Partial<Prefs>) => setPrefs((p) => mergePrefs(p, next));
 
   const resetMessages = () => {
     setError('');

@@ -114,10 +114,18 @@
   line-height: 1.7;
 }
 
+/* Fonte com serifa (escolhida no onboarding, passo 2) */
+.serif,
+.serif * {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
 /* Os cartões sobre a foto são uma "imagem" do app: mantêm a fonte da marca
    para não mudarem de tamanho com o botão Aa */
 .readable .floatCard,
-.readable .floatCard * {
+.readable .floatCard *,
+.serif .floatCard,
+.serif .floatCard * {
   font-family: var(--font);
   letter-spacing: normal !important;
 }

@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
 import { HomeLayout } from './components/layout/HomeLayout/HomeLayout';
 import { AuthPage } from './pages/Auth/AuthPage';
-import { OnboardingWizard } from './components/auth/OnboardingWizard/OnboardingWizard';
+import { OnboardingPage } from './pages/Onboarding/OnboardingPage';
 
 function AppContent() {
   const { user, isLoading } = useAuth();
@@ -32,7 +32,7 @@ function AppContent() {
   }
 
   if (!user.isConfigured) {
-    return <OnboardingWizard />;
+    return <OnboardingPage />;
   }
 
   return (
