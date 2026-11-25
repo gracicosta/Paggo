@@ -757,6 +757,107 @@
 }
 
 /* =========================================================
+   Desktop: a tela ocupa exatamente a altura da janela.
+   Ao aumentar a fonte (A+ / Aa) o conteúdo se reorganiza
+   em vez de criar barra de rolagem na página.
+   ========================================================= */
+
+@media (min-width: 901px) {
+  .page {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .hero {
+    min-height: 0;
+    padding: clamp(24px, 5.5vh, 44px) 48px clamp(18px, 4vh, 32px);
+  }
+
+  .heroCopy {
+    margin-top: clamp(16px, 5vh, 40px);
+  }
+
+  .heroText {
+    margin-top: clamp(10px, 2.2vh, 18px);
+  }
+
+  /* A foto se ajusta à altura que sobra no painel */
+  .visual {
+    padding: clamp(16px, 3.5vh, 28px) 0 clamp(14px, 3vh, 24px);
+  }
+
+  .photoFrame {
+    /* altura disponível, até o tamanho máximo da foto (380px de largura) */
+    height: min(100%, calc(380px * 806 / 709 + 12px));
+    display: flex;
+  }
+
+  .photo {
+    width: auto;
+    height: 100%;
+    min-width: 0;
+  }
+
+  /* O formulário acompanha o tamanho do texto na largura,
+     então o título e as frases não quebram em várias linhas */
+  .formSide {
+    /* Em telas baixas o texto cresce só até caber na altura da janela */
+    font-size: min(calc(16px * var(--fs, 1)), 2.2vh);
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .formWrap {
+    max-width: min(26.25em, 100%);
+    padding: clamp(8px, 2.5vh, 32px) 0;
+  }
+
+  .googleBtn {
+    margin-top: clamp(16px, 3.5vh, 28px);
+    min-height: clamp(44px, 6.5vh, 54px);
+  }
+
+  .divider {
+    margin: clamp(12px, 2.6vh, 22px) 0 clamp(10px, 2.2vh, 18px);
+  }
+
+  .form {
+    gap: clamp(10px, 2vh, 16px);
+  }
+
+  .field {
+    gap: clamp(5px, 1vh, 8px);
+  }
+
+  .inputBox {
+    min-height: clamp(44px, 6.5vh, 54px);
+  }
+
+  .inputBox input {
+    padding: clamp(8px, 1.6vh, 14px) 0;
+  }
+
+  .submitBtn {
+    min-height: clamp(48px, 6.8vh, 56px);
+  }
+
+  .switchText {
+    margin-top: clamp(14px, 3vh, 26px);
+  }
+
+  .title {
+    font-size: clamp(1.7em, 4.6vh, 2.15em);
+  }
+
+  .readable .formSide {
+    line-height: 1.55;
+  }
+}
+
+/* =========================================================
    Responsivo
    ========================================================= */
 
