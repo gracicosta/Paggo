@@ -220,6 +220,20 @@ li.stepCurrent {
   background: var(--error-bg);
 }
 
+/* Campo com erro + preenchimento automático: mantém o fundo vermelho-claro do erro */
+.signup .bad input:-webkit-autofill,
+.signup .bad input:-webkit-autofill:hover,
+.signup .bad input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--error-bg) inset, 0 0 0 1000px var(--bg) inset;
+  box-shadow: 0 0 0 1000px var(--error-bg) inset, 0 0 0 1000px var(--bg) inset;
+}
+
+/* mesmo ajuste, nome padrão (regra separada: se um navegador não conhece um dos nomes, não perde a outra) */
+.signup .bad input:autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--error-bg) inset, 0 0 0 1000px var(--bg) inset;
+  box-shadow: 0 0 0 1000px var(--error-bg) inset, 0 0 0 1000px var(--bg) inset;
+}
+
 .highContrast .bad {
   border-width: 2.5px;
   border-color: var(--weak);

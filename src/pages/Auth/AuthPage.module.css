@@ -617,6 +617,30 @@
   padding: 14px 0;
 }
 
+/* Preenchimento automático do navegador (e-mail/senha salvos no Google/Chrome).
+   O Chrome pinta o campo de azul-claro/branco e ignora "background". A sombra interna
+   cobre essa cor com a cor do próprio campo, em qualquer tema; a transição longa
+   impede o navegador de trocar o fundo. */
+.inputBox input:-webkit-autofill,
+.inputBox input:-webkit-autofill:hover,
+.inputBox input:-webkit-autofill:focus,
+.inputBox input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+/* mesmo ajuste, nome padrão (regra separada: se um navegador não conhece um dos nomes, não perde a outra) */
+.inputBox input:autofill {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
 .inputBox input::placeholder {
   color: var(--muted);
   opacity: 0.75;
