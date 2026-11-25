@@ -1,7 +1,8 @@
 import React from 'react';
-import { LuCalendar, LuCircleAlert } from 'react-icons/lu';
+import { LuCircleAlert } from 'react-icons/lu';
 import { chartColors } from '../../Auth/authPrefs';
 import { Check, Emo, StepTitle, type StepProps } from '../OnboardingUi';
+import { MonthPicker } from '../MonthPicker';
 import {
   GOALS,
   GOAL_MONTHS,
@@ -105,24 +106,11 @@ export const StepGoal: React.FC<StepProps> = ({ state, update, prefs }) => {
                   </button>
                 );
               })}
-              <label className={`${o.chip} ${state.goalDate ? o.chipSel : ''}`}>
-                <LuCalendar size={15} aria-hidden="true" />
-                {state.goalDate ? null : <span>Escolher data</span>}
-                <input
-                  type="month"
-                  className={o.monthInput}
-                  style={state.goalDate ? undefined : { width: 0, opacity: 0, position: 'absolute' }}
-                  min={isoMonthAhead(2)}
-                  value={state.goalDate ?? ''}
-                  aria-label="Escolher o mês da meta"
-                  onChange={(e) =>
-                    e.target.value
-                      ? update({ goalDate: e.target.value, goalMonths: monthsUntil(e.target.value) })
-                      : update({ goalDate: null, goalMonths: 12 })
-                  }
-                  onClick={(e) => (e.currentTarget as HTMLInputElement).showPicker?.()}
-                />
-              </label>
+              <MonthPicker
+                value={state.goalDate}
+                min={isoMonthAhead(2)}
+                onChange={(v) => (v ? update({ goalDate: v, goalMonths: monthsUntil(v) }) : update({ goalDate: null, goalMonths: 12 }))}
+              />
             </div>
           </fieldset>
 

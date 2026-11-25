@@ -7,10 +7,7 @@ export type PaletteId = 'padrao' | 'protan' | 'tritan' | 'contraste';
 export interface Prefs {
   dark: boolean;
   contrast: boolean;
-  /** Fonte "mais fácil de ler" (Verdana). Botão "Aa" da barra. */
   readable: boolean;
-  /** Fonte com serifa (Georgia). Escolhida no onboarding; não liga junto com "readable". */
-  serif: boolean;
   /** Posição em FONT_STEPS (0 = pequena … 4 = máxima). */
   fontStep: number;
   palette: PaletteId;
@@ -39,13 +36,14 @@ export function loadPrefs(): Prefs {
     dark: typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches,
     contrast: false,
     readable: false,
-    serif: false,
     fontStep: 1,
     palette: 'padrao',
   };
   try {
     const raw = localStorage.getItem(PREFS_KEY);
-    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
+    // A troca de fonte (botão "Aa") saiu do login e do cadastro e vai para a tela de Configurações.
+    // Até ela existir, a fonte de leitura fica desligada para ninguém ficar preso nela sem botão para voltar.
+    return raw ? { ...fallback, ...JSON.parse(raw), readable: false } : fallback;
   } catch {
     return fallback;
   }
@@ -60,24 +58,15 @@ export function savePrefs(prefs: Prefs) {
   }
 }
 
-/** Junta uma mudança às preferências. "Fácil de ler" e "com serifa" não ficam ligadas ao mesmo tempo. */
-export function mergePrefs(prev: Prefs, next: Partial<Prefs>): Prefs {
-  const merged = { ...prev, ...next };
-  if (next.readable) merged.serif = false;
-  if (next.serif) merged.readable = false;
-  return merged;
-}
-
 export const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-/** Classes do contêiner da página (tema, contraste e tipo de letra). */
+/** Classes do contêiner da página (tema, contraste e fonte de leitura). */
 export const pageClassName = (prefs: Prefs, extra = '') =>
   [
     styles.page,
     prefs.dark ? styles.dark : '',
     prefs.contrast ? styles.highContrast : '',
     prefs.readable ? styles.readable : '',
-    prefs.serif ? styles.serif : '',
     extra,
   ]
     .filter(Boolean)

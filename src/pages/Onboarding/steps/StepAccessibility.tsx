@@ -11,14 +11,6 @@ const PALETTES: Array<{ id: PaletteId; name: string; hint: string }> = [
   { id: 'contraste', name: 'Alto contraste', hint: 'preto e branco' },
 ];
 
-type FontId = 'padrao' | 'facil' | 'serifa';
-
-const FONTS: Array<{ id: FontId; name: string; className: string }> = [
-  { id: 'padrao', name: 'Padrão', className: o.fontDefault },
-  { id: 'facil', name: 'Mais fácil de ler', className: o.fontReadable },
-  { id: 'serifa', name: 'Com serifa', className: o.fontSerif },
-];
-
 /** 4 tamanhos do design → posições em FONT_STEPS (A+ na barra ainda chega ao 5º, "máximo"). */
 const SIZES = [
   { step: 0, name: 'Pequena', px: 15 },
@@ -27,15 +19,17 @@ const SIZES = [
   { step: 3, name: 'Muito grande', px: 29 },
 ];
 
-/** Passo 2 (opcional): tema, cores dos gráficos, tipo e tamanho da letra. Tudo muda na hora. */
+/**
+ * Passo 2 (opcional): tema, cores dos gráficos e tamanho da letra. Tudo muda na hora.
+ * O tipo de letra fica para a tela de Configurações (decisão da Dev, 25/11).
+ */
 export const StepAccessibility: React.FC<StepProps> = ({ prefs, onPrefsChange, firstName }) => {
-  const font: FontId = prefs.serif ? 'serifa' : prefs.readable ? 'facil' : 'padrao';
   const sizeStep = Math.min(prefs.fontStep, 3);
 
   return (
     <>
       <StepTitle>Deixe o Paggo do seu jeito</StepTitle>
-      <p className={o.sub}>Escolha como prefere ver o app. Dá para mudar depois nos botões do topo.</p>
+      <p className={o.sub}>Escolha como prefere ver o app. Dá para mudar depois nas configurações.</p>
 
       <fieldset className={o.sec}>
         <legend className={o.secT}>Aparência</legend>
@@ -92,30 +86,6 @@ export const StepAccessibility: React.FC<StepProps> = ({ prefs, onPrefsChange, f
                 </span>
                 {p.name}
                 <small>{p.hint}</small>
-              </button>
-            );
-          })}
-        </div>
-      </fieldset>
-
-      <fieldset className={o.sec}>
-        <legend className={o.secT}>Tipo de letra</legend>
-        <div className={o.g3}>
-          {FONTS.map((f) => {
-            const on = font === f.id;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                className={`${o.card} ${o.font} ${on ? o.sel : ''}`}
-                aria-pressed={on}
-                onClick={() => onPrefsChange({ readable: f.id === 'facil', serif: f.id === 'serifa' })}
-              >
-                {on && <Check />}
-                <span className={`${o.fontAa} ${f.className}`} aria-hidden="true">
-                  Aa
-                </span>
-                <small>{f.name}</small>
               </button>
             );
           })}

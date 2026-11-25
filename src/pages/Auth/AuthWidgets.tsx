@@ -13,7 +13,8 @@ export const GoogleIcon = () => (
   </svg>
 );
 
-/** Barra de acessibilidade: A−, A+, fonte legível, alto contraste e modo escuro. */
+/** Barra de acessibilidade: A−, A+, alto contraste e modo escuro.
+ *  (A troca de fonte, antigo botão "Aa", vai para a tela de Configurações.) */
 export const AccessibilityBar: React.FC<{
   variant: 'page' | 'hero';
   prefs: Prefs;
@@ -43,16 +44,6 @@ export const AccessibilityBar: React.FC<{
       title="Aumentar texto"
     >
       A+
-    </button>
-    <button
-      type="button"
-      className={`${styles.a11yBtn} ${styles.a11yReadable} ${prefs.readable ? styles.a11yOn : ''}`}
-      onClick={() => onChange({ readable: !prefs.readable })}
-      aria-pressed={prefs.readable}
-      aria-label="Fonte de leitura facilitada"
-      title="Fonte de leitura facilitada"
-    >
-      Aa
     </button>
     <button
       type="button"

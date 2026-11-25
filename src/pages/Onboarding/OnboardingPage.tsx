@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LuArrowLeft, LuArrowRight, LuCheck, LuChevronRight, LuClock, LuShield } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
-import { FONT_STEPS, loadPrefs, mergePrefs, pageClassName, savePrefs, type Prefs } from '../Auth/authPrefs';
-import { AccessibilityBar } from '../Auth/AuthWidgets';
+import { FONT_STEPS, loadPrefs, pageClassName, savePrefs, type Prefs } from '../Auth/authPrefs';
 import logo from '../../assets/images/paggo-logo.png';
 import styles from '../Auth/AuthPage.module.css';
 import o from './Onboarding.module.css';
@@ -83,7 +82,7 @@ export const OnboardingPage: React.FC = () => {
     document.getElementById('onb-title')?.focus({ preventScroll: true });
   }, [step]);
 
-  const updatePrefs = useCallback((next: Partial<Prefs>) => setPrefs((p) => mergePrefs(p, next)), []);
+  const updatePrefs = useCallback((next: Partial<Prefs>) => setPrefs((p) => ({ ...p, ...next })), []);
   const closePremium = useCallback(() => setPremiumOpen(false), []);
   const update = useCallback((next: Partial<OnboardingState>) => setState((s) => ({ ...s, ...next })), []);
 
@@ -185,14 +184,26 @@ export const OnboardingPage: React.FC = () => {
           {STEPS.map((s) => {
             const done = s.n < step;
             const cur = s.n === step;
-            return (
-              <li key={s.n} className={done ? o.stepDone : cur ? o.stepCurrent : ''} aria-current={cur ? 'step' : undefined}>
+            const content = (
+              <>
                 <b aria-hidden="true">{done ? <LuCheck size={15} strokeWidth={3} /> : s.n}</b>
                 <span>
                   {s.name}
-                  <span className="sr-only">{done ? ' (concluído)' : cur ? ' (passo atual)' : ''}</span>
+                  <span className="sr-only">{done ? ' (concluído, toque para voltar)' : cur ? ' (passo atual)' : ''}</span>
                 </span>
                 {s.optional && <i className={o.optTag}>opcional</i>}
+              </>
+            );
+            return (
+              <li key={s.n} className={done ? o.stepDone : cur ? o.stepCurrent : ''} aria-current={cur ? 'step' : undefined}>
+                {done ? (
+                  // Passo já feito: clicar volta para ele, com tudo preenchido
+                  <button type="button" className={o.stepBtn} onClick={() => goTo(s.n)} title={`Voltar para ${s.name}`}>
+                    {content}
+                  </button>
+                ) : (
+                  content
+                )}
               </li>
             );
           })}
@@ -211,7 +222,6 @@ export const OnboardingPage: React.FC = () => {
       <header className={o.mHead}>
         <div className={o.mTop}>
           <img src={logo} alt="Paggo" className={`${styles.logo} ${o.mLogo}`} />
-          <AccessibilityBar variant="hero" prefs={prefs} onChange={updatePrefs} />
         </div>
         <div className={o.mStep}>
           <span>
@@ -232,8 +242,6 @@ export const OnboardingPage: React.FC = () => {
 
       {/* ------------------------------ Conteúdo ------------------------------ */}
       <main className={`${styles.formSide} ${o.formSide}`}>
-        <AccessibilityBar variant="page" prefs={prefs} onChange={updatePrefs} />
-
         <div className={o.wrap}>
           <div className={o.progress}>
             <span className={o.progressLabel}>
@@ -262,7 +270,7 @@ export const OnboardingPage: React.FC = () => {
             {step === 7 && <StepPlan {...stepProps} plan={plan} />}
 
             <div className={o.btns}>
-              {step > 1 && step < TOTAL_STEPS && (
+              {step > 1 && (
                 <button type="button" className={o.back} onClick={() => goTo(step - 1)}>
                   <LuArrowLeft size={18} strokeWidth={2.2} aria-hidden="true" /> Voltar
                 </button>
