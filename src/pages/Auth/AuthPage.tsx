@@ -3,21 +3,21 @@ import {
   LuArrowRight,
   LuCheck,
   LuCircleAlert,
-  LuContrast,
   LuEye,
   LuEyeOff,
   LuInfo,
   LuLoader,
   LuLock,
   LuMail,
-  LuMoon,
   LuShield,
-  LuUser,
 } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
-import { isGoogleConfigured, signInWithGoogle } from './googleAuth';
+import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
 import logo from '../../assets/images/paggo-logo.png';
 import photo from '../../assets/images/login-cofrinho.jpg';
+import { loadPrefs, isValidEmail, pageClassName, PREFS_KEY, REMEMBER_KEY, FONT_STEPS, type Prefs } from './authPrefs';
+import { AccessibilityBar, GoogleIcon } from './AuthWidgets';
+import { SignupPage } from './SignupPage';
 import styles from './AuthPage.module.css';
 
 /** Credenciais fictícias para entrar no protótipo (abrem o perfil demonstrativo). */
@@ -26,115 +26,12 @@ const TEST_CREDENTIALS = {
   password: 'paggo123',
 } as const;
 
-const PREFS_KEY = 'paggo_login_prefs';
-const REMEMBER_KEY = 'paggo_remember_email';
-const FONT_STEPS = [0.875, 1, 1.125, 1.25, 1.375];
-
-interface Prefs {
-  dark: boolean;
-  contrast: boolean;
-  readable: boolean;
-  fontStep: number;
-}
-
-function loadPrefs(): Prefs {
-  const fallback: Prefs = {
-    dark: typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches,
-    contrast: false,
-    readable: false,
-    fontStep: 1,
-  };
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-const GoogleIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true">
-    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
-    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
-    <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
-    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
-  </svg>
-);
-
-/** Barra de acessibilidade: A−, A+, fonte legível, alto contraste e modo escuro. */
-const AccessibilityBar: React.FC<{
-  variant: 'page' | 'hero';
-  prefs: Prefs;
-  onChange: (next: Partial<Prefs>) => void;
-}> = ({ variant, prefs, onChange }) => (
-  <div
-    className={`${styles.a11yBar} ${variant === 'hero' ? styles.a11yHero : styles.a11yPage}`}
-    role="toolbar"
-    aria-label="Acessibilidade"
-  >
-    <button
-      type="button"
-      className={styles.a11yBtn}
-      onClick={() => onChange({ fontStep: Math.max(0, prefs.fontStep - 1) })}
-      disabled={prefs.fontStep === 0}
-      aria-label="Diminuir tamanho do texto"
-      title="Diminuir texto"
-    >
-      A−
-    </button>
-    <button
-      type="button"
-      className={styles.a11yBtn}
-      onClick={() => onChange({ fontStep: Math.min(FONT_STEPS.length - 1, prefs.fontStep + 1) })}
-      disabled={prefs.fontStep === FONT_STEPS.length - 1}
-      aria-label="Aumentar tamanho do texto"
-      title="Aumentar texto"
-    >
-      A+
-    </button>
-    <button
-      type="button"
-      className={`${styles.a11yBtn} ${styles.a11yReadable} ${prefs.readable ? styles.a11yOn : ''}`}
-      onClick={() => onChange({ readable: !prefs.readable })}
-      aria-pressed={prefs.readable}
-      aria-label="Fonte de leitura facilitada"
-      title="Fonte de leitura facilitada"
-    >
-      Aa
-    </button>
-    <button
-      type="button"
-      className={`${styles.a11yBtn} ${prefs.contrast ? styles.a11yOn : ''}`}
-      onClick={() => onChange({ contrast: !prefs.contrast })}
-      aria-pressed={prefs.contrast}
-      aria-label="Alto contraste"
-      title="Alto contraste"
-    >
-      <LuContrast size={18} />
-    </button>
-    <button
-      type="button"
-      className={`${styles.a11yBtn} ${styles.a11yTheme} ${prefs.dark ? styles.a11yThemeOn : ''}`}
-      onClick={() => onChange({ dark: !prefs.dark })}
-      aria-pressed={prefs.dark}
-      aria-label="Modo escuro"
-      title="Modo escuro"
-    >
-      <LuMoon size={17} />
-      <span className={styles.a11yThemeLabel}>{prefs.dark ? 'Escuro ativo' : 'Escuro'}</span>
-    </button>
-  </div>
-);
-
 export const AuthPage: React.FC = () => {
-  const { login, register, loginAsDemo } = useAuth();
+  const { login, loginAsDemo } = useAuth();
 
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [mode, setMode] = useState<'login' | 'register'>('login');
 
-  const [name, setName] = useState('');
   const [email, setEmail] = useState(() => localStorage.getItem(REMEMBER_KEY) ?? '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -143,6 +40,7 @@ export const AuthPage: React.FC = () => {
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleSignup, setGoogleSignup] = useState<GoogleProfile | null>(null);
 
   useEffect(() => {
     try {
@@ -186,9 +84,11 @@ export const AuthPage: React.FC = () => {
     setGoogleLoading(true);
     try {
       const profile = await signInWithGoogle();
-      // Conta já existente neste navegador → entra; senão cria o perfil e segue para o onboarding.
+      // Conta já existente neste navegador → entra. Se não existe, abre o cadastro já no
+      // passo 2 ("Sobre você") com nome e e-mail do Google preenchidos.
       if (!login(profile.email, '')) {
-        register(profile.name, profile.email, '');
+        setGoogleSignup(profile);
+        switchMode('register');
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Não foi possível entrar com o Google.');
@@ -226,27 +126,6 @@ export const AuthPage: React.FC = () => {
     setError('E-mail ou senha incorretos. Confira os dados e tente de novo.');
   };
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    resetMessages();
-    const cleanEmail = email.trim().toLowerCase();
-
-    if (!name.trim() || !cleanEmail || !password) {
-      setError('Preencha nome, e-mail e senha para criar sua conta.');
-      return;
-    }
-    if (!isValidEmail(cleanEmail)) {
-      setError('Digite um e-mail válido, por exemplo: nome@email.com.');
-      return;
-    }
-    if (password.length < 6) {
-      setError('A senha precisa ter pelo menos 6 caracteres.');
-      return;
-    }
-    persistRemember(cleanEmail);
-    register(name.trim(), cleanEmail, password);
-  };
-
   const handleForgot = () => {
     resetMessages();
     setInfo(
@@ -254,14 +133,23 @@ export const AuthPage: React.FC = () => {
     );
   };
 
-  const wrapperClass = [
-    styles.page,
-    prefs.dark ? styles.dark : '',
-    prefs.contrast ? styles.highContrast : '',
-    prefs.readable ? styles.readable : '',
-  ].join(' ');
+  // "Criar conta grátis" abre a tela de cadastro em 2 passos (mesmas preferências de acessibilidade).
+  if (mode === 'register') {
+    return (
+      <SignupPage
+        prefs={prefs}
+        onPrefsChange={updatePrefs}
+        googleProfile={googleSignup}
+        onGoToLogin={(registeredEmail) => {
+          if (registeredEmail) setEmail(registeredEmail);
+          setGoogleSignup(null);
+          switchMode('login');
+        }}
+      />
+    );
+  }
 
-  const isLogin = mode === 'login';
+  const wrapperClass = pageClassName(prefs);
 
   return (
     <div className={wrapperClass} style={{ '--fs': FONT_STEPS[prefs.fontStep] } as React.CSSProperties}>
@@ -352,18 +240,10 @@ export const AuthPage: React.FC = () => {
 
         <div className={styles.formWrap}>
           <h2 className={styles.title}>
-            {isLogin ? (
-              <>
-                Bem-vindo de volta <span aria-hidden="true">👋</span>
-              </>
-            ) : (
-              'Crie sua conta grátis'
-            )}
+            Bem-vindo de volta <span aria-hidden="true">👋</span>
           </h2>
           <p className={styles.subtitle}>
-            {isLogin
-              ? 'Entre para ver seus gastos, metas e o plano que a IA preparou para você.'
-              : 'Leva menos de um minuto. Depois, vamos montar seu plano financeiro juntos.'}
+            Entre para ver seus gastos, metas e o plano que a IA preparou para você.
           </p>
 
           <button
@@ -374,11 +254,11 @@ export const AuthPage: React.FC = () => {
             aria-busy={googleLoading}
           >
             {googleLoading ? <LuLoader className={styles.spin} size={20} /> : <GoogleIcon />}
-            {isLogin ? 'Entrar com Google' : 'Cadastrar com Google'}
+            Entrar com Google
           </button>
 
           <div className={styles.divider}>
-            <span>ou {isLogin ? 'entre' : 'cadastre-se'} com seu e-mail</span>
+            <span>ou entre com seu e-mail</span>
           </div>
 
           {error && (
@@ -394,24 +274,7 @@ export const AuthPage: React.FC = () => {
             </div>
           )}
 
-          <form onSubmit={isLogin ? handleLogin : handleRegister} noValidate className={styles.form}>
-            {!isLogin && (
-              <div className={styles.field}>
-                <label htmlFor="auth-name">Nome</label>
-                <div className={styles.inputBox}>
-                  <LuUser size={20} aria-hidden="true" />
-                  <input
-                    id="auth-name"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Como prefere ser chamado(a)?"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-
+          <form onSubmit={handleLogin} noValidate className={styles.form}>
             <div className={styles.field}>
               <label htmlFor="auth-email">E-mail</label>
               <div className={styles.inputBox}>
@@ -436,8 +299,8 @@ export const AuthPage: React.FC = () => {
                 <input
                   id="auth-password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete={isLogin ? 'current-password' : 'new-password'}
-                  placeholder={isLogin ? 'Sua senha' : 'Mínimo de 6 caracteres'}
+                  autoComplete="current-password"
+                  placeholder="Sua senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   aria-invalid={!!error && !password}
@@ -454,30 +317,28 @@ export const AuthPage: React.FC = () => {
               </div>
             </div>
 
-            {isLogin && (
-              <div className={styles.row}>
-                <label className={styles.checkbox}>
-                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                  <span className={styles.checkboxBox} aria-hidden="true">
-                    <LuCheck size={14} strokeWidth={3} />
-                  </span>
-                  Lembrar de mim
-                </label>
-                <button type="button" className={styles.linkBtn} onClick={handleForgot}>
-                  Esqueci minha senha
-                </button>
-              </div>
-            )}
+            <div className={styles.row}>
+              <label className={styles.checkbox}>
+                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+                <span className={styles.checkboxBox} aria-hidden="true">
+                  <LuCheck size={14} strokeWidth={3} />
+                </span>
+                Lembrar de mim
+              </label>
+              <button type="button" className={styles.linkBtn} onClick={handleForgot}>
+                Esqueci minha senha
+              </button>
+            </div>
 
             <button type="submit" className={styles.submitBtn}>
-              {isLogin ? 'Entrar' : 'Criar conta'} <LuArrowRight size={20} aria-hidden="true" />
+              Entrar <LuArrowRight size={20} aria-hidden="true" />
             </button>
           </form>
 
           <p className={styles.switchText}>
-            {isLogin ? 'Ainda não tem conta? ' : 'Já tem conta? '}
-            <button type="button" className={styles.linkBtn} onClick={() => switchMode(isLogin ? 'register' : 'login')}>
-              {isLogin ? 'Criar conta grátis' : 'Entrar'}
+            Ainda não tem conta?{' '}
+            <button type="button" className={styles.linkBtn} onClick={() => switchMode('register')}>
+              Criar conta grátis
             </button>
           </p>
         </div>

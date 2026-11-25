@@ -1,13 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState } from 'react';
-import type { AuthUser, UserFinancialProfile } from '../types/auth';
+import type { AuthUser, SignupDetails, UserFinancialProfile } from '../types/auth';
 import { DEMO_PROFILE } from '../data/defaultFinancialProfile';
 
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
   login: (email: string, pass: string) => boolean;
-  register: (name: string, email: string, pass: string) => AuthUser;
+  register: (name: string, email: string, pass: string, details?: SignupDetails) => AuthUser;
+  isEmailRegistered: (email: string) => boolean;
+  isCpfRegistered: (cpf: string) => boolean;
   saveFinancialProfile: (profile: UserFinancialProfile) => void;
   logout: () => void;
   loginAsDemo: () => void;
@@ -62,13 +64,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = (name: string, email: string, _pass: string): AuthUser => {
+  const readAccounts = (): AuthUser[] => {
+    try {
+      const accountsRaw = localStorage.getItem(STORAGE_KEY_ACCOUNTS);
+      return accountsRaw ? JSON.parse(accountsRaw) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  /** Usado no passo 1 do cadastro para avisar "já existe uma conta com esse e-mail". */
+  const isEmailRegistered = (email: string) =>
+    email.toLowerCase() === 'demo@consumiq.com' ||
+    readAccounts().some((acc) => acc.email.toLowerCase() === email.trim().toLowerCase());
+
+  /** Usado no passo 2 do cadastro: um CPF só pode ter uma conta. */
+  const isCpfRegistered = (cpf: string) => readAccounts().some((acc) => acc.cpf === cpf);
+
+  const register = (name: string, email: string, _pass: string, details?: SignupDetails): AuthUser => {
+    // Protótipo sem back-end: a senha NÃO é guardada no navegador.
+    // Com o Node.js, ela vai para o servidor e é salva com hash (bcrypt).
     void _pass;
     const newUser: AuthUser = {
       id: `usr_${Date.now()}`,
       name,
       email,
       isConfigured: false,
+      ...(details ?? {}),
       profile: {
         salary: 0,
         extraIncome: 0,
@@ -134,6 +156,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        isEmailRegistered,
+        isCpfRegistered,
         saveFinancialProfile,
         logout,
         loginAsDemo,

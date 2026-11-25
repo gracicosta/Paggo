@@ -1,0 +1,526 @@
+/* =========================================================
+   Tela de cadastro Paggo (2 passos)
+   Usa a base da tela de login (AuthPage.module.css) e acrescenta
+   só o que é novo: etapas, medidor de senha, dicas, termos etc.
+   Cores de sucesso/erro sempre vêm junto com ícone e texto
+   (quem tem daltonismo não depende só da cor).
+   ========================================================= */
+
+.signup {
+  --ok: #15803d;
+  --ok-bg: #dcfce7;
+  --warn: #b45309;
+  --weak: #b91c1c;
+  --soft: #f3efff;
+  --soft-border: #ddd3fe;
+  --soft-text: #4c1d95;
+}
+
+.dark {
+  --ok: #4ade80;
+  --ok-bg: rgba(34, 197, 94, 0.15);
+  --warn: #fbbf24;
+  --weak: #fca5a5;
+  --soft: rgba(139, 92, 246, 0.14);
+  --soft-border: rgba(139, 92, 246, 0.4);
+  --soft-text: #ddd6fe;
+}
+
+.highContrast {
+  --ok: #14532d;
+  --warn: #7c2d12;
+  --weak: #7f1d1d;
+  --soft: #ffffff;
+  --soft-border: #17122b;
+  --soft-text: #000000;
+}
+
+.highContrast.dark {
+  --ok: #86efac;
+  --warn: #fde68a;
+  --weak: #fecaca;
+  --soft: #000000;
+  --soft-border: #ffffff;
+  --soft-text: #ffffff;
+}
+
+/* ---------------- Painel roxo: etapas e cartões ---------------- */
+
+.steps {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.steps b {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stepDone b {
+  background: #fff;
+  color: #6d28d9;
+  border-color: #fff;
+}
+
+li.stepCurrent {
+  color: #fff;
+  font-weight: 700;
+}
+
+.stepCurrent b {
+  background: #e9c8ff;
+  color: #4c1d95;
+  border-color: #e9c8ff;
+  box-shadow: 0 0 0 5px rgba(233, 200, 255, 0.25);
+}
+
+.visual {
+  padding-top: 20px;
+}
+
+/* A foto do cadastro é um pouco menor que a do login (o painel tem as etapas) */
+.photo {
+  width: min(20vw, calc((100dvh - 560px) * 0.88), 300px);
+  min-width: 200px;
+  --card-fs: 4.4cqw;
+}
+
+.cardStrong {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 0.15em;
+  font-size: 1.6em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.cardCheck {
+  display: inline-grid;
+  place-items: center;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #047857;
+  font-size: 0.65em;
+}
+
+.cardDone {
+  left: -40%;
+  top: 12%;
+  padding: 1em 1.2em;
+}
+
+.cardPlan {
+  left: 76%;
+  top: 54%;
+  padding: 1em 1.2em;
+}
+
+/* ------------------------- Formulário ------------------------- */
+
+.formWrap {
+  max-width: 460px;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.progressLabel {
+  font-size: 0.85em;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.progressLabel b {
+  color: var(--primary);
+}
+
+.dark .progressLabel b {
+  color: #c4b5fd;
+}
+
+.bars {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  max-width: 190px;
+}
+
+.bars i {
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--border);
+}
+
+.bars .barOn {
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+}
+
+.formWrap h2:focus {
+  outline: none;
+}
+
+.formWrap h2:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.alert {
+  margin: 18px 0 0;
+}
+
+.form2 {
+  margin-top: 24px;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+/* Estados do campo */
+.ok {
+  border-color: var(--ok);
+}
+
+.bad {
+  border-color: var(--error-border);
+  background: var(--error-bg);
+}
+
+.highContrast .bad {
+  border-width: 2.5px;
+  border-color: var(--weak);
+}
+
+.hint,
+.err,
+.okMsg {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 0.82em;
+  line-height: 1.4;
+}
+
+.hint svg,
+.err svg,
+.okMsg svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.hint {
+  color: var(--muted);
+}
+
+.err {
+  color: var(--error-text);
+  font-weight: 600;
+}
+
+.highContrast .err {
+  color: var(--weak);
+}
+
+.okMsg {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+/* Medidor de força da senha */
+.meter {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.meter i {
+  flex: 1;
+  height: 5px;
+  border-radius: 9px;
+  background: var(--border);
+}
+
+.meter_weak .meterOn {
+  background: var(--weak);
+}
+
+.meter_medium .meterOn {
+  background: var(--warn);
+}
+
+.meter_strong .meterOn {
+  background: var(--ok);
+}
+
+.meterLabel {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+
+.tone_weak {
+  color: var(--weak);
+}
+
+.tone_medium {
+  color: var(--warn);
+}
+
+.tone_strong {
+  color: var(--ok);
+}
+
+.rules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+
+.rules li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ruleDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: grid;
+  place-items: center;
+}
+
+.ruleOk {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.ruleOk .ruleDot {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #fff;
+}
+
+.dark .ruleOk .ruleDot {
+  color: #052e16;
+}
+
+/* Conta Google (quem chegou pelo botão do Google) */
+.googleChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.googleChip svg {
+  flex: none;
+}
+
+/* Aceite dos termos */
+.terms {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  font-size: 0.94em !important;
+  font-weight: 500 !important;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.terms input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.termsBox {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--border);
+  background: var(--input-bg);
+  color: transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.terms input:checked + .termsBox {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.highContrast.dark .terms input:checked + .termsBox {
+  color: #000;
+}
+
+.terms input:focus-visible + .termsBox {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.termsBad {
+  border-color: var(--error-border);
+}
+
+.termsBad .termsBox {
+  border-color: var(--error-border);
+}
+
+.terms a {
+  color: var(--link);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.terms a:hover,
+.highContrast .terms a {
+  text-decoration: underline;
+}
+
+/* Botões Voltar + Criar minha conta */
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.backBtn {
+  flex: none;
+  min-height: 56px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.backBtn:hover {
+  border-color: var(--focus);
+}
+
+.backBtn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.buttons .createBtn {
+  margin-top: 0;
+  flex: 1;
+}
+
+/* ------------------------- Celular ------------------------- */
+
+@media (max-width: 900px) {
+  .steps {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 6px;
+    margin-top: 18px;
+    max-width: none;
+  }
+
+  .steps li {
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.82rem;
+    text-align: center;
+    flex: 1;
+  }
+
+  .steps b {
+    width: 32px;
+    height: 32px;
+    font-size: 0.88rem;
+  }
+
+  /* No celular o painel roxo fica compacto: logo, acessibilidade e etapas */
+  .visual {
+    display: none;
+  }
+
+  .progress {
+    display: none;
+  }
+
+  .row2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .backBtn {
+    padding: 0 16px;
+  }
+}
+
+/* Alto contraste: barrinhas vazias só com contorno (não parecem preenchidas) */
+.highContrast .bars i:not(.barOn),
+.highContrast .meter i:not(.meterOn) {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--border);
+}
