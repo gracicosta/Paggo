@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LuArrowLeft, LuArrowRight, LuCheck, LuChevronRight, LuClock, LuShield } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
-import { FONT_STEPS, loadPrefs, pageClassName, savePrefs, type Prefs } from '../Auth/authPrefs';
+import { FONT_STEPS, loadPrefs, onPrefsChanged, pageClassName, savePrefs, type Prefs } from '../Auth/authPrefs';
 import logo from '../../assets/images/paggo-logo.png';
 import styles from '../Auth/AuthPage.module.css';
 import o from './Onboarding.module.css';
@@ -24,6 +24,7 @@ import { StepBills } from './steps/StepBills';
 import { StepLimits } from './steps/StepLimits';
 import { StepGoal } from './steps/StepGoal';
 import { StepPlan } from './steps/StepPlan';
+import { legalHref } from '../Legal/legalRoute';
 
 /** Texto do botão principal de cada passo (design aprovado). */
 const NEXT_LABEL: Record<number, string> = {
@@ -64,6 +65,9 @@ export const OnboardingPage: React.FC = () => {
   const meta = STEPS[step - 1];
 
   useEffect(() => savePrefs(prefs), [prefs]);
+
+  // Se a pessoa mudar tema ou fonte na página de Termos e Privacidade, a tela acompanha ao voltar.
+  useEffect(() => onPrefsChanged(setPrefs), []);
 
   useEffect(() => {
     try {
@@ -298,9 +302,9 @@ export const OnboardingPage: React.FC = () => {
           <LuShield size={15} aria-hidden="true" />
           <span>Seus dados ficam protegidos</span>
           <span aria-hidden="true">·</span>
-          <a href="#termos">Termos</a>
+          <a href={legalHref('termos')}>Termos</a>
           <span aria-hidden="true">·</span>
-          <a href="#privacidade">Privacidade</a>
+          <a href={legalHref('privacidade')}>Privacidade</a>
         </footer>
       </main>
 

@@ -15,10 +15,11 @@ import { useAuth } from '../../context/AuthContext';
 import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
 import logo from '../../assets/images/paggo-logo.png';
 import photo from '../../assets/images/login-cofrinho.jpg';
-import { loadPrefs, isValidEmail, pageClassName, PREFS_KEY, REMEMBER_KEY, FONT_STEPS, type Prefs } from './authPrefs';
+import { loadPrefs, onPrefsChanged, isValidEmail, pageClassName, PREFS_KEY, REMEMBER_KEY, FONT_STEPS, type Prefs } from './authPrefs';
 import { AccessibilityBar, GoogleIcon } from './AuthWidgets';
 import { SignupPage } from './SignupPage';
 import styles from './AuthPage.module.css';
+import { legalHref } from '../Legal/legalRoute';
 
 /** Credenciais fictícias para entrar no protótipo (abrem o perfil demonstrativo). */
 const TEST_CREDENTIALS = {
@@ -49,6 +50,9 @@ export const AuthPage: React.FC = () => {
       /* preferências são opcionais */
     }
   }, [prefs]);
+
+  // Se a pessoa mudar tema ou fonte na página de Termos e Privacidade, a tela acompanha ao voltar.
+  useEffect(() => onPrefsChanged(setPrefs), []);
 
   const updatePrefs = (next: Partial<Prefs>) => setPrefs((p) => ({ ...p, ...next }));
 
@@ -348,9 +352,9 @@ export const AuthPage: React.FC = () => {
           <span>Conexão segura</span>
           <span className={styles.footerAdult}>· Somente maiores de 18 anos</span>
           <span aria-hidden="true">·</span>
-          <a href="#termos">Termos</a>
+          <a href={legalHref('termos')}>Termos</a>
           <span aria-hidden="true">·</span>
-          <a href="#privacidade">Privacidade</a>
+          <a href={legalHref('privacidade')}>Privacidade</a>
         </footer>
       </main>
     </div>

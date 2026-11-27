@@ -84,6 +84,20 @@ export function savePrefs(prefs: Prefs) {
   }
 }
 
+/** Evento disparado quando outra tela (ex.: Termos e Privacidade) muda as preferências salvas. */
+export const PREFS_EVENT = 'paggo:prefs-changed';
+
+export function notifyPrefsChanged() {
+  window.dispatchEvent(new Event(PREFS_EVENT));
+}
+
+/** Recarrega as preferências salvas sempre que outra tela avisar que mudou algo. */
+export function onPrefsChanged(reload: (prefs: Prefs) => void) {
+  const handler = () => reload(loadPrefs());
+  window.addEventListener(PREFS_EVENT, handler);
+  return () => window.removeEventListener(PREFS_EVENT, handler);
+}
+
 export const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 /** Classes do contêiner da página (tema, contraste e fonte de leitura). */

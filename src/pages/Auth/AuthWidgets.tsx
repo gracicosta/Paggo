@@ -16,12 +16,13 @@ export const GoogleIcon = () => (
 /** Barra de acessibilidade: A−, A+, alto contraste e modo escuro.
  *  (A troca de fonte, antigo botão "Aa", vai para a tela de Configurações.) */
 export const AccessibilityBar: React.FC<{
-  variant: 'page' | 'hero';
+  /** page/hero: posições do login e do cadastro · inline: sem regra de posição (ex.: Termos e Privacidade). */
+  variant: 'page' | 'hero' | 'inline';
   prefs: Prefs;
   onChange: (next: Partial<Prefs>) => void;
 }> = ({ variant, prefs, onChange }) => (
   <div
-    className={`${styles.a11yBar} ${variant === 'hero' ? styles.a11yHero : styles.a11yPage}`}
+    className={`${styles.a11yBar} ${variant === 'hero' ? styles.a11yHero : variant === 'page' ? styles.a11yPage : ''}`}
     role="toolbar"
     aria-label="Acessibilidade"
   >

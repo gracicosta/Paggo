@@ -36,6 +36,7 @@ import logo from '../../assets/images/paggo-logo.png';
 import photo from '../../assets/images/login-cofrinho.jpg';
 import styles from './AuthPage.module.css';
 import s from './SignupPage.module.css';
+import { legalHref } from '../Legal/legalRoute';
 
 type Step = 1 | 2;
 type FieldName = 'email' | 'password' | 'confirm' | 'name' | 'cpf' | 'birth' | 'terms';
@@ -621,11 +622,11 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
                   </span>
                   <span>
                     Li e aceito os{' '}
-                    <a href="#termos">
+                    <a href={legalHref('termos')}>
                       Termos de Uso
                     </a>{' '}
                     e a{' '}
-                    <a href="#privacidade">
+                    <a href={legalHref('privacidade')}>
                       Política de Privacidade
                     </a>{' '}
                     do Paggo.
@@ -650,9 +651,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
           <LuShield size={15} aria-hidden="true" />
           <span>Conexão segura</span>
           <span aria-hidden="true">·</span>
-          <a href="#termos">Termos</a>
+          <a href={legalHref('termos')}>Termos</a>
           <span aria-hidden="true">·</span>
-          <a href="#privacidade">Privacidade</a>
+          <a href={legalHref('privacidade')}>Privacidade</a>
         </footer>
       </main>
     </div>
