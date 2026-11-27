@@ -1,6 +1,7 @@
 import React from 'react';
 import { LuMoon, LuSun } from 'react-icons/lu';
-import { CHART_PALETTES, FONT_STEPS, type PaletteId } from '../../Auth/authPrefs';
+import { CHART_PALETTES, FONT_STEPS } from '../../../constants/palettes';
+import type { PaletteId } from '../../../types/prefs';
 import { Check, StepTitle, type StepProps } from '../OnboardingUi';
 import o from '../Onboarding.module.css';
 

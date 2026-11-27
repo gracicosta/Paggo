@@ -29,6 +29,8 @@
 }
 
 .dark {
+  /* Controles nativos (calendário da data, barras de rolagem) também no escuro */
+  color-scheme: dark;
   --bg: #0e0a1c;
   --surface: #17122b;
   --border: #2a2344;
@@ -130,6 +132,19 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+  }
+}
+
+/* Transações tem lista longa: a página rola normalmente, mesmo no notebook */
+@media (min-width: 1181px) and (min-height: 640px) {
+  .shell.scrollable {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .scrollable .inner {
+    height: auto;
   }
 }
 

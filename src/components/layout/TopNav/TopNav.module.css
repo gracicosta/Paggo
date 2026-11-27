@@ -5,6 +5,15 @@
   min-height: 76px;
   flex-wrap: wrap;
   flex: none;
+  /* Fica presa no topo quando a página rola (Transações, celular e tablet).
+     O fundo cobre o conteúdo que passa por baixo; a margem negativa estica o fundo até a borda
+     da tela (o .inner do HomeLayout tem 24px de respiro dos lados). As janelas (z-index 50+) ficam por cima. */
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin: 0 -24px;
+  padding: 0 24px;
+  background: var(--bg);
 }
 
 .logo {
@@ -264,6 +273,8 @@
   .topNav {
     gap: 14px;
     padding-top: 14px;
+    /* respiro entre as abas e o conteúdo que passa por baixo ao rolar */
+    padding-bottom: 10px;
   }
 
   .tabs {
@@ -285,6 +296,9 @@
 @media (max-width: 620px) {
   .topNav {
     gap: 10px;
+    /* no celular o respiro dos lados é 16px */
+    margin: 0 -16px;
+    padding: 14px 16px 10px;
   }
 
   .tab span,

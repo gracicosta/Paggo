@@ -1,0 +1,337 @@
+/*
+ * Campos suspensos compartilhados: calendário de dias (DatePicker) e lista "Como pagou?" (SelectMenu).
+ * Saíram de Transactions.module.css sem mudar o visual, para poderem ser usados em outras telas.
+ * As cores vêm das variáveis do HomeLayout (--surface, --text, --border, --soft, --muted, --link).
+ */
+
+.metaLabel {
+  white-space: nowrap;
+}
+
+/* ---------- Calendário de dias (mesmo visual do calendário de mês do onboarding) ---------- */
+.dpWrap {
+  min-width: 0;
+}
+
+.dpTrigger {
+  width: 100%;
+  min-height: 2.75em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0 0.75em;
+  border: 1px solid var(--border);
+  border-radius: 0.8em;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86em;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dpTrigger span {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dpTrigger:hover,
+.dpTriggerOpen {
+  border-color: #8b5cf6;
+}
+
+.dpTriggerOpen {
+  background: var(--soft);
+}
+
+.dp {
+  position: fixed;
+  z-index: 80;
+  width: min(300px, calc(100vw - 24px));
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  box-shadow: 0 24px 60px rgba(40, 10, 90, 0.22);
+  animation: menuIn 0.16s ease-out;
+}
+
+.dpUp {
+  animation-name: menuInUp;
+}
+
+.dpHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dpHead strong {
+  font-size: 1em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dpNav {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.dpNav:hover:not(:disabled) {
+  border-color: #8b5cf6;
+}
+
+.dpNav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.dpGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dpWeek {
+  padding: 4px 0 6px;
+  text-align: center;
+  font-size: 0.78em;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.dpDay {
+  aspect-ratio: 1;
+  min-height: 34px;
+  border-radius: 11px;
+  border: 1.5px solid transparent;
+  background: var(--soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.dpDay:hover:not(:disabled) {
+  border-color: #8b5cf6;
+}
+
+.dpOutside {
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.dpDay:disabled {
+  background: transparent;
+  color: var(--muted);
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Hoje: contorno lilás (o número continua legível sem depender só da cor) */
+.dpToday {
+  border-color: #c4b5fd;
+  color: var(--link);
+}
+
+.dpDay.dpOn {
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+}
+
+.dpFoot {
+  display: flex;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.dpLink {
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dpLink:hover {
+  background: var(--soft);
+}
+
+.dpLinkMuted {
+  margin-left: auto;
+  color: var(--muted);
+}
+
+/* .dp na frente: ganha da regra de foco da página (.page button:focus-visible), como antes */
+.dp .dpNav:focus-visible,
+.dp .dpDay:focus-visible,
+.dp .dpLink:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 1px;
+}
+
+/* ---------- Lista suspensa "Como pagou?" (substitui o <select> nativo) ---------- */
+.selectWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.5em;
+  min-height: 2.75em;
+  padding: 0 0.35em 0 0.75em;
+  border: 1px solid var(--border);
+  border-radius: 0.8em;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.86em;
+  font-weight: 600;
+}
+
+.selectWrap:focus-within {
+  border-color: #8b5cf6;
+}
+
+.selectBtn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  min-height: 2.3em;
+  padding: 0 0.5em;
+  border: none;
+  border-radius: 0.6em;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.selectBtn:hover,
+.selectBtnOpen {
+  background: var(--soft);
+}
+
+.selectValue {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectIcon {
+  flex: none;
+  width: 1.75em;
+  height: 1.75em;
+  display: grid;
+  place-items: center;
+  border-radius: 0.55em;
+}
+
+.selectBtn .selectIcon {
+  background: var(--soft);
+}
+
+.selectChevron {
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+
+.selectBtnOpen .selectChevron {
+  transform: rotate(180deg);
+  color: var(--link);
+}
+
+.selectList {
+  position: fixed;
+  z-index: 80;
+  margin: 0;
+  padding: 0.35em;
+  list-style: none;
+  overflow-y: auto;
+  border-radius: 1em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 18px 44px rgba(23, 18, 43, 0.22);
+  animation: menuIn 0.14s ease-out;
+}
+
+.selectListUp {
+  animation-name: menuInUp;
+}
+
+.selectOption {
+  display: flex;
+  align-items: center;
+  gap: 0.65em;
+  padding: 0.55em 0.6em;
+  border-radius: 0.7em;
+  font-size: 0.92em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.selectOption + .selectOption {
+  margin-top: 0.15em;
+}
+
+/* Destaque roxo (mouse ou setas do teclado) no lugar do azul do sistema */
+.selectOptionActive {
+  background: var(--soft);
+  box-shadow: inset 0 0 0 1.5px #a78bfa;
+}
+
+.selectOptionOn {
+  color: var(--link);
+  font-weight: 800;
+}
+
+.selectCheck {
+  flex: none;
+  color: var(--link);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes menuInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { LuContrast, LuMoon } from 'react-icons/lu';
-import { FONT_STEPS, type Prefs } from './authPrefs';
+import { FONT_STEPS } from '../../constants/palettes';
+import type { Prefs } from '../../types/prefs';
 import styles from './AuthPage.module.css';
 
 /** Logo do Google (cores oficiais), usada nos botões "Entrar/Cadastrar com Google". */

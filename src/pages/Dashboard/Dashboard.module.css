@@ -140,79 +140,14 @@
   gap: 10px;
 }
 
-.chip {
-  padding: 7px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-}
-
 .balanceChart {
   flex: 1;
   min-height: 170px;
   margin: 16px -8px -6px;
 }
 
-/* KPIs */
-.kpiHead {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-}
-
-.kpiValue {
-  display: block;
-  margin: 14px 0 10px;
-  font-size: clamp(24px, 2.2vw, 30px);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-.iconBox {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  flex: none;
-}
-
-.toneOk {
-  background: var(--ok-bg);
-  color: var(--ok);
-}
-
-.toneBad {
-  background: var(--bad-bg);
-  color: var(--bad);
-}
-
 .toneSoft {
   background: var(--soft);
-}
-
-.pill {
-  display: inline-flex;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.pillOk {
-  background: var(--ok-bg);
-  color: var(--ok);
-}
-
-.pillBad {
-  background: var(--bad-bg);
-  color: var(--bad);
 }
 
 /* Taxa de economia */
@@ -574,15 +509,17 @@
     min-height: 0;
   }
 
-  .kpi,
   .insight {
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
 
-  .kpi .pill {
-    align-self: flex-start;
+  /* Cartões Entrou/Saiu (SummaryCard): cabem na linha da grade */
+  .kpi {
+    min-height: 0;
+    overflow: hidden;
+    justify-content: center;
   }
 
   .insightBtn {
@@ -625,16 +562,6 @@
 
   .balanceChart {
     margin-top: 8px;
-  }
-
-  .kpiValue {
-    margin: 6px 0 6px;
-    font-size: 24px;
-  }
-
-  .iconBox {
-    width: 34px;
-    height: 34px;
   }
 
   .savingsText,

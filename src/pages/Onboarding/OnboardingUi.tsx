@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { LuCheck, LuCrown, LuX } from 'react-icons/lu';
-import type { Prefs } from '../Auth/authPrefs';
+import type { Prefs } from '../../types/prefs';
 import { FREE_CATEGORY_LIMITS, FREE_SUBSCRIPTIONS, PREMIUM_PRICE, TONES, type OnboardingState, type Tone } from './onboardingData';
 import o from './Onboarding.module.css';
 

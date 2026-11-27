@@ -94,4 +94,6 @@ export interface AuthUser {
   birthDate?: string;
   termsAcceptedAt?: string;
   provider?: 'email' | 'google';
+  /** Plano da conta (sem o campo = grátis; veja data/plans.ts). */
+  plan?: 'free' | 'premium';
 }

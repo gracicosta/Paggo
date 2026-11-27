@@ -1,0 +1,86 @@
+/* Janela por cima da tela (nova/editar/excluir transação). Saiu de Transactions.module.css sem mudanças. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(14, 10, 28, 0.55);
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal {
+  width: min(460px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 1.25em;
+  border-radius: 1.4em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 24px 60px rgba(23, 18, 43, 0.3);
+  animation: popIn 0.18s ease-out;
+}
+
+.modalSm {
+  width: min(400px, 100%);
+}
+
+.modalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  margin-bottom: 0.9em;
+}
+
+.modalHead h2 {
+  font-size: 1.15em;
+  font-weight: 800;
+}
+
+.closeBtn {
+  width: 2.3em;
+  height: 2.3em;
+  display: grid;
+  place-items: center;
+  border-radius: 0.7em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.backdrop button:focus-visible,
+.backdrop input:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (max-width: 620px) {
+  .backdrop {
+    place-items: end center;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 92dvh;
+    border-radius: 1.4em 1.4em 0 0;
+  }
+}

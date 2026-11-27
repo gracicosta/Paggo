@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LuArrowLeft, LuArrowRight, LuCheck, LuChevronRight, LuClock, LuShield } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
-import { FONT_STEPS, loadPrefs, onPrefsChanged, pageClassName, savePrefs, type Prefs } from '../Auth/authPrefs';
+import { pageClassName } from '../Auth/authPrefs';
+import { FONT_STEPS } from '../../constants/palettes';
+import { usePrefs } from '../../hooks/usePrefs';
+import { useOnboardingDraft } from '../../hooks/useOnboardingDraft';
+import { clearDraft } from '../../services/onboardingDraftService';
 import logo from '../../assets/images/paggo-logo.png';
 import styles from '../Auth/AuthPage.module.css';
 import o from './Onboarding.module.css';
@@ -12,8 +16,6 @@ import {
   TOTAL_STEPS,
   buildAiPlan,
   defaultLimits,
-  draftKey,
-  initialState,
   toFinancialProfile,
   type OnboardingState,
 } from './onboardingData';
@@ -33,15 +35,6 @@ const NEXT_LABEL: Record<number, string> = {
   7: 'Abrir meu painel',
 };
 
-function loadDraft(userId: string): OnboardingState {
-  try {
-    const raw = localStorage.getItem(draftKey(userId));
-    return raw ? { ...initialState(), ...JSON.parse(raw) } : initialState();
-  } catch {
-    return initialState();
-  }
-}
-
 /**
  * Onboarding em 7 passos (design aprovado em design/onboarding/).
  *  1 Boas-vindas · 2 Acessibilidade* · 3 Renda (obrigatório) · 4 Contas fixas e assinaturas*
@@ -55,27 +48,15 @@ export const OnboardingPage: React.FC = () => {
   const userId = user?.id ?? 'anon';
   const firstName = (user?.name ?? '').trim().split(/\s+/)[0] ?? '';
 
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
-  const [state, setState] = useState<OnboardingState>(() => loadDraft(userId));
+  // Preferências (passo 2) e respostas (rascunho) já se salvam sozinhas no navegador
+  const { prefs, updatePrefs } = usePrefs();
+  const [state, setState] = useOnboardingDraft(userId);
   const [incomeError, setIncomeError] = useState(false);
   const [premiumOpen, setPremiumOpen] = useState(false);
 
   const { step } = state;
   const prevStep = useRef(step);
   const meta = STEPS[step - 1];
-
-  useEffect(() => savePrefs(prefs), [prefs]);
-
-  // Se a pessoa mudar tema ou fonte na página de Termos e Privacidade, a tela acompanha ao voltar.
-  useEffect(() => onPrefsChanged(setPrefs), []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(draftKey(userId), JSON.stringify(state));
-    } catch {
-      /* rascunho é opcional */
-    }
-  }, [state, userId]);
 
   // Ao trocar de passo: sobe a página e leva o foco ao título (o leitor de tela anuncia o passo).
   // Compara com o passo anterior (e não com "primeira vez") para funcionar também no StrictMode.
@@ -86,9 +67,8 @@ export const OnboardingPage: React.FC = () => {
     document.getElementById('onb-title')?.focus({ preventScroll: true });
   }, [step]);
 
-  const updatePrefs = useCallback((next: Partial<Prefs>) => setPrefs((p) => ({ ...p, ...next })), []);
   const closePremium = useCallback(() => setPremiumOpen(false), []);
-  const update = useCallback((next: Partial<OnboardingState>) => setState((s) => ({ ...s, ...next })), []);
+  const update = useCallback((next: Partial<OnboardingState>) => setState((s) => ({ ...s, ...next })), [setState]);
 
   // O plano é gerado uma vez ao chegar no passo 7 (e refeito se a pessoa voltar e mudar algo)
   const plan = useMemo(() => (step === TOTAL_STEPS ? buildAiPlan(state) : []), [step, state]);
@@ -130,11 +110,7 @@ export const OnboardingPage: React.FC = () => {
 
   const finish = () => {
     saveFinancialProfile(toFinancialProfile(state, buildAiPlan(state)));
-    try {
-      localStorage.removeItem(draftKey(userId));
-    } catch {
-      /* nada */
-    }
+    clearDraft(userId);
   };
 
   const stepProps: StepProps = {

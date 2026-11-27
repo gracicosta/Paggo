@@ -1,4 +1,4 @@
-import type { UserFinancialProfile } from '../types/auth';
+import type { AuthUser, UserFinancialProfile } from '../types/auth';
 
 export const DEFAULT_CATEGORIES = [
   { id: 'alimentacao', name: 'Alimentação', limit: 1400, spent: 850, color: '#22c55e', background: '#DCFCE7' },
@@ -56,3 +56,7 @@ export const DEMO_PROFILE: UserFinancialProfile = {
     },
   ],
 };
+
+/** Perfil usado nas telas: o que a pessoa preencheu no onboarding ou, sem ele, o da conta demo. */
+export const activeProfile = (user: AuthUser | null | undefined): UserFinancialProfile =>
+  user?.profile && user.isConfigured ? user.profile : DEMO_PROFILE;

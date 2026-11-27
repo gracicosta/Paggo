@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   LuArrowRight,
   LuCheck,
@@ -15,7 +15,12 @@ import { useAuth } from '../../context/AuthContext';
 import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
 import logo from '../../assets/images/paggo-logo.png';
 import photo from '../../assets/images/login-cofrinho.jpg';
-import { loadPrefs, onPrefsChanged, isValidEmail, pageClassName, PREFS_KEY, REMEMBER_KEY, FONT_STEPS, type Prefs } from './authPrefs';
+import { pageClassName } from './authPrefs';
+import { FONT_STEPS } from '../../constants/palettes';
+import { isValidEmail } from '../../utils/validation';
+import { REMEMBER_KEY } from '../../services/prefsService';
+import { readText, removeItem, writeText } from '../../services/storage';
+import { usePrefs } from '../../hooks/usePrefs';
 import { AccessibilityBar, GoogleIcon } from './AuthWidgets';
 import { SignupPage } from './SignupPage';
 import styles from './AuthPage.module.css';
@@ -30,10 +35,11 @@ const TEST_CREDENTIALS = {
 export const AuthPage: React.FC = () => {
   const { login, loginAsDemo } = useAuth();
 
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  // Preferências de acessibilidade: salvas no navegador e sincronizadas com Termos e Privacidade
+  const { prefs, updatePrefs } = usePrefs();
   const [mode, setMode] = useState<'login' | 'register'>('login');
 
-  const [email, setEmail] = useState(() => localStorage.getItem(REMEMBER_KEY) ?? '');
+  const [email, setEmail] = useState(() => readText(REMEMBER_KEY) ?? '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
@@ -42,19 +48,6 @@ export const AuthPage: React.FC = () => {
   const [info, setInfo] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleSignup, setGoogleSignup] = useState<GoogleProfile | null>(null);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-    } catch {
-      /* preferências são opcionais */
-    }
-  }, [prefs]);
-
-  // Se a pessoa mudar tema ou fonte na página de Termos e Privacidade, a tela acompanha ao voltar.
-  useEffect(() => onPrefsChanged(setPrefs), []);
-
-  const updatePrefs = (next: Partial<Prefs>) => setPrefs((p) => ({ ...p, ...next }));
 
   const resetMessages = () => {
     setError('');
@@ -69,12 +62,8 @@ export const AuthPage: React.FC = () => {
   };
 
   const persistRemember = (value: string) => {
-    try {
-      if (remember) localStorage.setItem(REMEMBER_KEY, value);
-      else localStorage.removeItem(REMEMBER_KEY);
-    } catch {
-      /* ignora */
-    }
+    if (remember) writeText(REMEMBER_KEY, value);
+    else removeItem(REMEMBER_KEY);
   };
 
   const handleGoogle = async () => {

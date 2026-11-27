@@ -1,31 +1,30 @@
 import { motion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import type { IconType } from 'react-icons';
-import { MdOutlineTrendingDown, MdOutlineTrendingUp } from 'react-icons/md';
-import { LuLightbulb, LuPlus, LuReceipt, LuShieldCheck, LuSparkles, LuTarget, LuWallet } from 'react-icons/lu';
+import { LuCrown, LuLightbulb, LuPlus, LuReceipt, LuShieldCheck, LuSparkles, LuTarget, LuWallet } from 'react-icons/lu';
 import { GoArrowRight } from 'react-icons/go';
-import {
-  FaAmazon, FaBox, FaCarSide, FaGamepad, FaGraduationCap, FaHeartPulse, FaHouse, FaHouseChimney, FaQuestion, FaUser, FaUtensils,
-} from 'react-icons/fa6';
+import { FaAmazon, FaHouseChimney, FaQuestion } from 'react-icons/fa6';
 import { PiAirplaneTiltFill, PiStudentBold, PiStudentFill } from 'react-icons/pi';
 import { IoWaterOutline } from 'react-icons/io5';
 import { TbWorld } from 'react-icons/tb';
 import { SiNetflix, SiSpotify } from 'react-icons/si';
 import { useAuth } from '../../context/AuthContext';
-import { useFinance } from '../../context/FinanceContext';
+import { useFinance, useMonthFinance } from '../../context/FinanceContext';
+import { ALL_CATEGORIES } from '../../data/transactionCategories';
+import { CHART_MONTHS, PREMIUM_PRICE, userPlan } from '../../data/plans';
 import type { FixedBillItem, PiggyBankItemModel } from '../../types/auth';
-import { seriesColor, type PaletteId } from '../Auth/authPrefs';
+import { brl, pct, signedBrl } from '../../utils/format';
+import { Pill } from '../../components/finance/Pill';
+import { BalanceDelta, ExpenseCard, IncomeCard } from '../../components/finance/MonthCards';
+import { fade } from '../../components/animations/fade';
+import { seriesColor } from '../../utils/palette';
+import type { PaletteId } from '../../types/prefs';
 import styles from './Dashboard.module.css';
 
 /** Meta de economia usada no bloco "Taxa de economia" (parte da renda que deveria sobrar). */
 const SAVINGS_TARGET = 0.3;
 /** Valor semanal sugerido no insight da IA. */
 const WEEKLY_SAVING = 150;
-
-const brl = (v: number, digits = 2) =>
-  `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
-
-const pct = (v: number) => `${Math.round(Math.abs(v) * 100)}%`;
 
 function greeting() {
   const h = new Date().getHours();
@@ -34,16 +33,8 @@ function greeting() {
   return 'Boa noite';
 }
 
-const CATEGORY_ICONS: Record<string, IconType> = {
-  alimentacao: FaUtensils,
-  lazer: FaGamepad,
-  transporte: FaCarSide,
-  saude: FaHeartPulse,
-  educacao: FaGraduationCap,
-  casa: FaHouse,
-  despesasPessoais: FaUser,
-  outros: FaBox,
-};
+/** Ícone da categoria (o mesmo da tela de Transações). */
+const categoryIcon = (id: string): IconType => ALL_CATEGORIES.find((c) => c.id === id)?.icon ?? FaQuestion;
 
 function goalIcon(title: string): IconType {
   const t = title.toLowerCase();
@@ -76,44 +67,39 @@ function billStatusText(bill: FixedBillItem) {
   return { text: `Vence dia ${String(bill.dueDay).padStart(2, '0')}`, cls: '' };
 }
 
-const SHORT_MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
 const GOAL_COLORS = ['#7c3aed', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899'];
-
-/** Entrada suave dos blocos, um pouco depois do outro. */
-const fade = (i: number) => ({
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, delay: i * 0.04, ease: 'easeOut' as const },
-});
 
 /**
  * Página principal. As cores dos gráficos seguem a paleta escolhida no onboarding
  * (passo 2: padrão, vermelho e verde, azul e amarelo, alto contraste).
  */
-export function Dashboard({ month, palette = 'padrao', dark = false }: { month: string; palette?: PaletteId; dark?: boolean }) {
+export function Dashboard({
+  month,
+  palette = 'padrao',
+  dark = false,
+  onNewTransaction,
+}: {
+  month: string;
+  palette?: PaletteId;
+  dark?: boolean;
+  /** "Nova transação" abre a tela de Transações. */
+  onNewTransaction?: () => void;
+}) {
   const [ringStart, ringEnd] =
     palette === 'padrao' ? ['#7c3aed', '#e879f9'] : [seriesColor(palette, dark, 0, ''), seriesColor(palette, dark, 0, '')];
   const { user } = useAuth();
-  const { totalIncome, totalExpenses, currentBalance, monthlyChartData, categoryBudgets, piggyBanks, fixedBills, subscriptions } =
-    useFinance();
+  const { piggyBanks, fixedBills, subscriptions } = useFinance();
+  // Gráfico de evolução: últimos 3 meses no plano grátis, o ano todo no Premium
+  const plan = userPlan(user);
+  const chartMonths = CHART_MONTHS[plan];
+  // Entradas, saídas, saldo, limites e gráfico vêm das transações (as mesmas da tela de Transações)
+  const summary = useMonthFinance(month, chartMonths);
+  const { balance: currentBalance, savingsRate, categoryBudgets, series } = summary;
 
   const firstName = user?.name ? user.name.split(' ')[0] : 'Visitante';
 
-  // Comparação com o mês anterior (penúltimo ponto do gráfico)
-  const prev = monthlyChartData[monthlyChartData.length - 2];
-  const prevBalance = prev ? prev.receitas - prev.despesas : 0;
-  const balanceDelta = currentBalance - prevBalance;
-  const incomeChange = prev?.receitas ? totalIncome / prev.receitas - 1 : 0;
-  const expenseChange = prev?.despesas ? totalExpenses / prev.despesas - 1 : 0;
-  const savingsRate = totalIncome > 0 ? Math.max(0, currentBalance / totalIncome) : 0;
-
-  // A projeção do contexto termina no mês atual: rotula os pontos com os últimos meses até hoje
-  const nowMonth = new Date().getMonth();
-  const chartData = monthlyChartData.map((m, i) => ({
-    mes: SHORT_MONTHS[(nowMonth - (monthlyChartData.length - 1 - i) + 12) % 12],
-    saldo: m.receitas - m.despesas,
-  }));
+  // Evolução do saldo nos últimos meses, terminando no mês escolhido no topo
+  const chartData = series.map((m) => ({ mes: m.label, saldo: m.saldo }));
 
   const topCategories = [...categoryBudgets]
     .sort((a, b) => b.spent / (b.limit || 1) - a.spent / (a.limit || 1))
@@ -141,7 +127,7 @@ export function Dashboard({ month, palette = 'padrao', dark = false }: { month: 
           <p className={styles.subtitle}>Sistema inteligente de análise financeira · {monthName}, num relance.</p>
         </div>
         <div className={styles.cta}>
-          <button type="button" className={styles.btnSecondary}>
+          <button type="button" className={styles.btnSecondary} onClick={onNewTransaction}>
             <LuPlus size={17} /> Nova transação
           </button>
           <button type="button" className={styles.btnPrimary}>
@@ -154,14 +140,17 @@ export function Dashboard({ month, palette = 'padrao', dark = false }: { month: 
         {/* Saldo + evolução */}
         <motion.article {...fade(1)} className={styles.balance}>
           <span className={styles.balanceLabel}>
-            <LuWallet size={17} /> Saldo atual
+            <LuWallet size={17} /> Saldo do mês
           </span>
-          <strong className={styles.balanceValue}>{brl(currentBalance)}</strong>
+          <strong className={styles.balanceValue}>{signedBrl(currentBalance)}</strong>
           <div className={styles.chips}>
-            <span className={styles.chip}>
-              {balanceDelta >= 0 ? '▲' : '▼'} {brl(Math.abs(balanceDelta), 0)} vs mês anterior
-            </span>
-            <span className={styles.chip}>Sobrou {pct(savingsRate)} da renda</span>
+            <BalanceDelta summary={summary} />
+            <Pill tone="hero">Sobrou {pct(savingsRate)} da renda</Pill>
+            {plan === 'free' && (
+              <Pill tone="hero" title={`No Premium (${PREMIUM_PRICE}/mês) o gráfico mostra os últimos 12 meses`}>
+                <LuCrown size={13} aria-hidden="true" /> Ano todo no Premium
+              </Pill>
+            )}
           </div>
           <div className={styles.balanceChart}>
             <ResponsiveContainer width="100%" height="100%">
@@ -177,7 +166,9 @@ export function Dashboard({ month, palette = 'padrao', dark = false }: { month: 
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: 'rgba(255,255,255,0.75)', fontSize: 12 }}
-                  interval={0}
+                  // 12 meses no celular não cabem: o Recharts esconde alguns rótulos para não encavalar
+                  interval={chartData.length > 6 ? 'preserveStartEnd' : 0}
+                  minTickGap={12}
                   padding={{ left: 14, right: 14 }}
                 />
                 <Tooltip
@@ -193,33 +184,9 @@ export function Dashboard({ month, palette = 'padrao', dark = false }: { month: 
           </div>
         </motion.article>
 
-        {/* Receitas */}
-        <motion.article {...fade(2)} className={`${styles.card} ${styles.kpi}`}>
-          <div className={styles.kpiHead}>
-            Receitas
-            <span className={`${styles.iconBox} ${styles.toneOk}`}>
-              <MdOutlineTrendingUp size={22} />
-            </span>
-          </div>
-          <strong className={styles.kpiValue}>{brl(totalIncome)}</strong>
-          <span className={`${styles.pill} ${incomeChange >= 0 ? styles.pillOk : styles.pillBad}`}>
-            {incomeChange >= 0 ? '▲' : '▼'} {pct(incomeChange)} · entradas do período
-          </span>
-        </motion.article>
-
-        {/* Despesas */}
-        <motion.article {...fade(3)} className={`${styles.card} ${styles.kpi}`}>
-          <div className={styles.kpiHead}>
-            Despesas
-            <span className={`${styles.iconBox} ${styles.toneBad}`}>
-              <MdOutlineTrendingDown size={22} />
-            </span>
-          </div>
-          <strong className={styles.kpiValue}>{brl(totalExpenses)}</strong>
-          <span className={`${styles.pill} ${expenseChange <= 0 ? styles.pillOk : styles.pillBad}`}>
-            {expenseChange <= 0 ? '▼' : '▲'} {pct(expenseChange)} · saídas e compromissos
-          </span>
-        </motion.article>
+        {/* Entrou e Saiu: os mesmos cartões da tela de Transações */}
+        <IncomeCard summary={summary} className={styles.kpi} motionProps={fade(2)} />
+        <ExpenseCard summary={summary} className={styles.kpi} motionProps={fade(3)} />
 
         {/* Taxa de economia */}
         <motion.article {...fade(4)} className={`${styles.card} ${styles.savings}`}>
@@ -292,7 +259,7 @@ export function Dashboard({ month, palette = 'padrao', dark = false }: { month: 
           </header>
           {topCategories.map((c, i) => {
             const color = seriesColor(palette, dark, i, c.color);
-            const Icon = CATEGORY_ICONS[c.id] || FaQuestion;
+            const Icon = categoryIcon(c.id);
             const used = c.limit ? c.spent / c.limit : 0;
             return (
               <div key={c.id} className={styles.cat}>

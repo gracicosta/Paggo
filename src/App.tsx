@@ -1,32 +1,19 @@
 import './App.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
+import { TransactionsProvider } from './context/TransactionsContext';
 import { HomeLayout } from './components/layout/HomeLayout/HomeLayout';
 import { AuthPage } from './pages/Auth/AuthPage';
 import { OnboardingPage } from './pages/Onboarding/OnboardingPage';
 import { LegalPage } from './pages/Legal/LegalPage';
 import { useLegalRoute } from './pages/Legal/legalRoute';
+import { LoadingScreen } from './components/ui/LoadingScreen';
 
 function AppContent() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#090d16',
-          color: '#38bdf8',
-          fontSize: '1.1rem',
-          fontWeight: 600,
-        }}
-      >
-        Carregando Paggo...
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!user) {
@@ -37,10 +24,13 @@ function AppContent() {
     return <OnboardingPage />;
   }
 
+  // Fonte única dos dados do painel: transações (entradas e saídas) + perfil (boletos, limites, metas).
   return (
-    <FinanceProvider>
-      <HomeLayout />
-    </FinanceProvider>
+    <TransactionsProvider>
+      <FinanceProvider>
+        <HomeLayout />
+      </FinanceProvider>
+    </TransactionsProvider>
   );
 }
 

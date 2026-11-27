@@ -1,6 +1,6 @@
 import React from 'react';
 import { LuCircleAlert } from 'react-icons/lu';
-import { chartColors } from '../../Auth/authPrefs';
+import { chartColors } from '../../../utils/palette';
 import { Check, Emo, StepTitle, type StepProps } from '../OnboardingUi';
 import { MonthPicker } from '../MonthPicker';
 import {

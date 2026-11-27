@@ -17,7 +17,10 @@ import {
 } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
 import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
-import { FONT_STEPS, isValidEmail, pageClassName, type Prefs } from './authPrefs';
+import { pageClassName } from './authPrefs';
+import { FONT_STEPS } from '../../constants/palettes';
+import { isValidEmail } from '../../utils/validation';
+import type { Prefs } from '../../types/prefs';
 import { AccessibilityBar, GoogleIcon } from './AuthWidgets';
 import {
   PASSWORD_RULES,

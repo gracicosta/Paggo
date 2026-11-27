@@ -1,18 +1,11 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { LuCalendar, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { useDismiss } from '../../hooks/useDismiss';
+import { MONTHS_LOWER, MONTHS_SHORT_LOWER, parseIsoMonth, toIsoMonth } from '../../utils/dates';
 import o from './Onboarding.module.css';
-
-const MONTHS_SHORT = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-const MONTHS_LONG = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
 /** Quantos anos à frente o calendário deixa escolher. */
 const MAX_YEARS = 10;
-
-const parse = (iso: string) => {
-  const [y, m] = iso.split('-').map(Number);
-  return { y, m: m - 1 };
-};
-const toIso = (y: number, m: number) => `${y}-${String(m + 1).padStart(2, '0')}`;
 
 /**
  * Escolha de mês e ano no visual do Paggo (substitui o calendário do navegador,
@@ -25,16 +18,16 @@ export const MonthPicker: React.FC<{
   min: string;
   onChange: (value: string | null) => void;
 }> = ({ value, min, onChange }) => {
-  const minP = parse(min);
+  const minP = parseIsoMonth(min);
   const maxYear = minP.y + MAX_YEARS;
   const [open, setOpen] = useState(false);
-  const [year, setYear] = useState(() => (value ? parse(value).y : minP.y));
+  const [year, setYear] = useState(() => (value ? parseIsoMonth(value).y : minP.y));
   const [offset, setOffset] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const selected = value ? parse(value) : null;
+  const selected = value ? parseIsoMonth(value) : null;
   const isDisabled = (y: number, m: number) => y < minP.y || (y === minP.y && m < minP.m) || y > maxYear;
 
   const close = (focusTrigger = true) => {
@@ -48,14 +41,7 @@ export const MonthPicker: React.FC<{
   };
 
   // Fecha ao clicar fora
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
-  }, [open]);
+  useDismiss(open, [wrapRef], () => setOpen(false));
 
   // Mantém o cartão dentro da tela (no celular o botão pode estar perto da borda)
   useLayoutEffect(() => {
@@ -101,7 +87,7 @@ export const MonthPicker: React.FC<{
     );
   };
 
-  const label = selected ? `${MONTHS_SHORT[selected.m]} de ${selected.y}` : 'Escolher data';
+  const label = selected ? `${MONTHS_SHORT_LOWER[selected.m]} de ${selected.y}` : 'Escolher data';
 
   return (
     <div className={o.mpWrap} ref={wrapRef}>
@@ -150,7 +136,7 @@ export const MonthPicker: React.FC<{
           </div>
 
           <div className={o.mpGrid}>
-            {MONTHS_SHORT.map((name, m) => {
+            {MONTHS_SHORT_LOWER.map((name, m) => {
               const on = selected?.y === year && selected.m === m;
               const disabled = isDisabled(year, m);
               return (
@@ -162,10 +148,10 @@ export const MonthPicker: React.FC<{
                   className={`${o.mpMonth} ${on ? o.mpOn : ''}`}
                   disabled={disabled}
                   aria-pressed={on}
-                  aria-label={`${MONTHS_LONG[m]} de ${year}`}
+                  aria-label={`${MONTHS_LOWER[m]} de ${year}`}
                   onKeyDown={(e) => moveFocus(e, m)}
                   onClick={() => {
-                    onChange(toIso(year, m));
+                    onChange(toIsoMonth(year, m));
                     close();
                   }}
                 >

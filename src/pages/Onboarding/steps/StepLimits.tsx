@@ -1,6 +1,6 @@
 import React from 'react';
 import { LuCircleAlert, LuCrown, LuLock, LuPencil, LuPlus, LuX } from 'react-icons/lu';
-import { chartColors } from '../../Auth/authPrefs';
+import { chartColors } from '../../../utils/palette';
 import { Emo, StepTitle, type StepProps } from '../OnboardingUi';
 import {
   FREE_CATEGORY_LIMITS,

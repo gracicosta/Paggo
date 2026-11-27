@@ -15,7 +15,9 @@ import {
 import logoOnDark from '../../assets/images/paggo-logo.png';
 import logoOnLight from '../../assets/images/paggo-logo-escura.png';
 import { AccessibilityBar } from '../Auth/AuthWidgets';
-import { FONT_STEPS, loadPrefs, notifyPrefsChanged, savePrefs, seriesColor, type Prefs } from '../Auth/authPrefs';
+import { FONT_STEPS } from '../../constants/palettes';
+import { seriesColor } from '../../utils/palette';
+import { usePrefs } from '../../hooks/usePrefs';
 import { DOCS, LEGAL_UPDATED_AT, LEGAL_VERSION, SUMMARY, type LegalDoc } from './legalContent';
 import { legalHref, type LegalRoute } from './legalRoute';
 import styles from './LegalPage.module.css';
@@ -37,22 +39,11 @@ export const LegalPage: React.FC<LegalPageProps> = ({ route, onSwitchDoc, onClos
   const { doc, section } = route;
   const content = DOCS[doc];
 
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [open, setOpen] = useState<Set<string>>(() => new Set([section ?? content.sections[0].id]));
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   // Mesmas preferências de acessibilidade do resto do app (salvas e avisadas para a tela de origem).
-  const firstPrefs = useRef(true);
-  useEffect(() => {
-    if (firstPrefs.current) {
-      firstPrefs.current = false;
-      return;
-    }
-    savePrefs(prefs);
-    notifyPrefsChanged();
-  }, [prefs]);
-
-  const updatePrefs = (next: Partial<Prefs>) => setPrefs((p) => ({ ...p, ...next }));
+  const { prefs, updatePrefs } = usePrefs({ sync: 'broadcast' });
 
   // Ao abrir ou trocar de documento (App.tsx remonta a página com outra "key"):
   // rola até o tópico pedido e leva o foco ao título.

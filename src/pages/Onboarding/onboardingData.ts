@@ -6,14 +6,18 @@ import type {
   SubscriptionItem,
   UserFinancialProfile,
 } from '../../types/auth';
+import { brl as brlDigits, brlInt } from '../../utils/format';
+import { MONTH_NAMES, monthName, toIsoMonth } from '../../utils/dates';
+
+export { brlInt, monthName };
 
 /* =========================================================
    Regras do plano grátis
    ========================================================= */
 
-export const FREE_SUBSCRIPTIONS = 3;
-export const FREE_CATEGORY_LIMITS = 3;
-export const PREMIUM_PRICE = 'R$ 23,90';
+import { FREE_CATEGORY_LIMITS, FREE_SUBSCRIPTIONS, PREMIUM_PRICE } from '../../data/plans';
+
+export { FREE_CATEGORY_LIMITS, FREE_SUBSCRIPTIONS, PREMIUM_PRICE };
 
 /* =========================================================
    Passos
@@ -219,11 +223,8 @@ export const sum = (items: Array<{ value: number }>) => items.reduce((acc, i) =>
 export function brl(value: number, compact = false) {
   const hasCents = Math.round(value * 100) % 100 !== 0;
   const digits = compact && !hasCents ? 0 : 2;
-  return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+  return brlDigits(value, digits);
 }
-
-/** R$ 1.341 (arredondado, para resumos). */
-export const brlInt = (value: number) => `R$ ${Math.round(value).toLocaleString('pt-BR')}`;
 
 /** "3.200" → 3200 ; "39,90" → 39.9 */
 export function parseMoney(text: string): number {
@@ -238,12 +239,8 @@ export function maskMoneyInt(text: string): string {
   return digits ? Number(digits).toLocaleString('pt-BR') : '';
 }
 
-const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-
-export const monthName = (d: Date) => `${MONTHS[d.getMonth()]} de ${d.getFullYear()}`;
-
 /** Mês atual por extenso, com inicial maiúscula ("Novembro"). */
-export const currentMonthLabel = (d = new Date()) => MONTHS[d.getMonth()].replace(/^./, (c) => c.toUpperCase());
+export const currentMonthLabel = (d = new Date()) => MONTH_NAMES[d.getMonth()];
 
 /**
  * A pessoa guarda uma parcela por mês a partir do mês que vem.
@@ -264,7 +261,7 @@ export function monthsUntil(isoMonth: string, today = new Date()): number {
 /** "aaaa-mm" de N meses à frente (valor mínimo do campo "Escolher data"). */
 export function isoMonthAhead(n: number, today = new Date()) {
   const d = new Date(today.getFullYear(), today.getMonth() + n, 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  return toIsoMonth(d.getFullYear(), d.getMonth());
 }
 
 /** Resumo do mês (usado nos passos 5, 6 e 7). */

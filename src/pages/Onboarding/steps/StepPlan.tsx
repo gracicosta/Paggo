@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LuBot, LuLoader } from 'react-icons/lu';
-import { chartColors } from '../../Auth/authPrefs';
+import { chartColors } from '../../../utils/palette';
 import type { AiPlanAction } from '../../../types/auth';
 import { StepTitle, type StepProps } from '../OnboardingUi';
 import { GOALS, brlInt, currentMonthLabel, monthSummary } from '../onboardingData';
