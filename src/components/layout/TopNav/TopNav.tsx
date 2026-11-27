@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { MdBarChart, MdSwapHoriz, MdLightbulbOutline, MdOutlineDarkMode } from 'react-icons/md';
-import { LuPiggyBank, LuLogOut, LuContrast, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { LuPiggyBank, LuLogOut, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { GoGear } from 'react-icons/go';
 import { FaCalendar } from 'react-icons/fa';
@@ -26,13 +26,11 @@ const MONTH_NAMES = [
 interface TopNavProps {
   dark: boolean;
   onToggleTheme: () => void;
-  colorblind: boolean;
-  onToggleColorblind: () => void;
   month: string;
   onMonthChange: (month: string) => void;
 }
 
-export function TopNav({ dark, onToggleTheme, colorblind, onToggleColorblind, month, onMonthChange }: TopNavProps) {
+export function TopNav({ dark, onToggleTheme, month, onMonthChange }: TopNavProps) {
   const { user, logout } = useAuth();
   const [active, setActive] = useState('Dashboard');
   const [monthOpen, setMonthOpen] = useState(false);
@@ -155,16 +153,6 @@ export function TopNav({ dark, onToggleTheme, colorblind, onToggleColorblind, mo
         </button>
         <button type="button" className={`${styles.iconBtn} ${styles.hideSm}`} title="Configurações" aria-label="Configurações">
           <GoGear size={19} />
-        </button>
-        <button
-          type="button"
-          className={`${styles.iconBtn} ${colorblind ? styles.iconBtnOn : ''}`}
-          title="Contraste para daltônicos"
-          aria-label="Contraste para daltônicos"
-          aria-pressed={colorblind}
-          onClick={onToggleColorblind}
-        >
-          <LuContrast size={19} />
         </button>
         <button
           type="button"

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { TopNav } from '../TopNav/TopNav';
 import { Dashboard } from '../../../pages/Dashboard/Dashboard';
+import { loadPrefs, type PaletteId } from '../../../pages/Auth/authPrefs';
 import styles from './HomeLayout.module.css';
 
 const THEME_KEY = 'paggo_theme';
-const COLORBLIND_KEY = 'paggo_colorblind';
 const MONTH_NAMES = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
@@ -25,13 +25,8 @@ function initialDark(): boolean {
 
 export function HomeLayout() {
   const [dark, setDark] = useState(initialDark);
-  const [colorblind, setColorblind] = useState(() => {
-    try {
-      return localStorage.getItem(COLORBLIND_KEY) === '1';
-    } catch {
-      return false;
-    }
-  });
+  // Cores dos gráficos escolhidas no onboarding (passo 2). A troca fica na tela de Configurações.
+  const [palette] = useState<PaletteId>(() => loadPrefs().palette ?? 'padrao');
   const [month, setMonth] = useState(() => {
     const now = new Date();
     return `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
@@ -45,26 +40,17 @@ export function HomeLayout() {
     }
   }, [dark]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(COLORBLIND_KEY, colorblind ? '1' : '0');
-    } catch {
-      /* opcional */
-    }
-  }, [colorblind]);
 
   return (
-    <div className={`${styles.shell} ${dark ? styles.dark : ''} ${colorblind ? styles.colorblind : ''}`}>
+    <div className={`${styles.shell} ${dark ? styles.dark : ''} ${palette !== 'padrao' ? styles[`pal_${palette}`] : ''}`}>
       <div className={styles.inner}>
         <TopNav
           dark={dark}
           onToggleTheme={() => setDark((d) => !d)}
-          colorblind={colorblind}
-          onToggleColorblind={() => setColorblind((c) => !c)}
           month={month}
           onMonthChange={setMonth}
         />
-        <Dashboard month={month} colorblind={colorblind} />
+        <Dashboard month={month} palette={palette} dark={dark} />
       </div>
     </div>
   );

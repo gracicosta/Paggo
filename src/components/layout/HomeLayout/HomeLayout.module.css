@@ -58,7 +58,9 @@
 }
 
 /* Modo para daltônicos: paleta Okabe-Ito (azul = bom, laranja/vermelhão = atenção) */
-.colorblind {
+/* Cores de alerta conforme a paleta escolhida no onboarding (daltonismo).
+   Os sinais também têm ▲▼ e texto: a cor nunca é a única informação. */
+.pal_protan {
   --ok: #0072b2;
   --ok-bg: rgba(0, 114, 178, 0.12);
   --bad: #d55e00;
@@ -66,12 +68,50 @@
   --warn: #9a6a00;
 }
 
-.dark.colorblind {
+.dark.pal_protan {
   --ok: #56b4e9;
   --ok-bg: rgba(86, 180, 233, 0.16);
   --bad: #f5a05a;
   --bad-bg: rgba(230, 159, 0, 0.16);
   --warn: #f0e442;
+}
+
+.pal_tritan {
+  --ok: #00695c;
+  --ok-bg: rgba(0, 105, 92, 0.12);
+  --bad: #d81b60;
+  --bad-bg: rgba(216, 27, 96, 0.12);
+  --warn: #8e24aa;
+}
+
+.dark.pal_tritan {
+  --ok: #4db6ac;
+  --ok-bg: rgba(77, 182, 172, 0.16);
+  --bad: #f06292;
+  --bad-bg: rgba(240, 98, 146, 0.16);
+  --warn: #ce93d8;
+}
+
+.pal_contraste {
+  --ok: #000000;
+  --ok-bg: #e5e5e5;
+  --bad: #000000;
+  --bad-bg: #ffffff;
+  --warn: #000000;
+}
+
+.dark.pal_contraste {
+  --ok: #ffffff;
+  --ok-bg: #333333;
+  --bad: #ffffff;
+  --bad-bg: #000000;
+  --warn: #ffffff;
+}
+
+/* Alto contraste: "ruim" ganha borda para não depender do tom de cinza */
+.pal_contraste [class*='pillBad'],
+.pal_contraste [class*='toneBad'] {
+  box-shadow: inset 0 0 0 1.5px var(--bad);
 }
 
 .inner {

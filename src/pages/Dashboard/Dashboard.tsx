@@ -14,6 +14,7 @@ import { SiNetflix, SiSpotify } from 'react-icons/si';
 import { useAuth } from '../../context/AuthContext';
 import { useFinance } from '../../context/FinanceContext';
 import type { FixedBillItem, PiggyBankItemModel } from '../../types/auth';
+import { seriesColor, type PaletteId } from '../Auth/authPrefs';
 import styles from './Dashboard.module.css';
 
 /** Meta de economia usada no bloco "Taxa de economia" (parte da renda que deveria sobrar). */
@@ -77,9 +78,6 @@ function billStatusText(bill: FixedBillItem) {
 
 const SHORT_MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-/** Paleta Okabe-Ito: cores que pessoas com daltonismo conseguem diferenciar. */
-const COLORBLIND_PALETTE = ['#0072b2', '#e69f00', '#009e73', '#cc79a7', '#56b4e9', '#d55e00', '#f0e442', '#7f7f7f'];
-
 const GOAL_COLORS = ['#7c3aed', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899'];
 
 /** Entrada suave dos blocos, um pouco depois do outro. */
@@ -89,7 +87,13 @@ const fade = (i: number) => ({
   transition: { duration: 0.35, delay: i * 0.04, ease: 'easeOut' as const },
 });
 
-export function Dashboard({ month, colorblind = false }: { month: string; colorblind?: boolean }) {
+/**
+ * Página principal. As cores dos gráficos seguem a paleta escolhida no onboarding
+ * (passo 2: padrão, vermelho e verde, azul e amarelo, alto contraste).
+ */
+export function Dashboard({ month, palette = 'padrao', dark = false }: { month: string; palette?: PaletteId; dark?: boolean }) {
+  const [ringStart, ringEnd] =
+    palette === 'padrao' ? ['#7c3aed', '#e879f9'] : [seriesColor(palette, dark, 0, ''), seriesColor(palette, dark, 0, '')];
   const { user } = useAuth();
   const { totalIncome, totalExpenses, currentBalance, monthlyChartData, categoryBudgets, piggyBanks, fixedBills, subscriptions } =
     useFinance();
@@ -223,8 +227,8 @@ export function Dashboard({ month, colorblind = false }: { month: string; colorb
             <svg viewBox="0 0 36 36" aria-hidden="true">
               <defs>
                 <linearGradient id="paggoRing">
-                  <stop offset="0" stopColor="#7c3aed" />
-                  <stop offset="1" stopColor="#e879f9" />
+                  <stop offset="0" stopColor={ringStart} />
+                  <stop offset="1" stopColor={ringEnd} />
                 </linearGradient>
               </defs>
               <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--track)" strokeWidth="3.6" />
@@ -287,7 +291,7 @@ export function Dashboard({ month, colorblind = false }: { month: string; colorb
             </button>
           </header>
           {topCategories.map((c, i) => {
-            const color = colorblind ? COLORBLIND_PALETTE[i % COLORBLIND_PALETTE.length] : c.color;
+            const color = seriesColor(palette, dark, i, c.color);
             const Icon = CATEGORY_ICONS[c.id] || FaQuestion;
             const used = c.limit ? c.spent / c.limit : 0;
             return (
@@ -316,9 +320,7 @@ export function Dashboard({ month, colorblind = false }: { month: string; colorb
           </header>
           {piggyBanks.slice(0, 3).map((g, i) => {
             const Icon = goalIcon(g.title);
-            const color = colorblind
-              ? COLORBLIND_PALETTE[i % COLORBLIND_PALETTE.length]
-              : g.progressColor || GOAL_COLORS[i % GOAL_COLORS.length];
+            const color = seriesColor(palette, dark, i, g.progressColor || GOAL_COLORS[i % GOAL_COLORS.length]);
             const progress = g.goalAmount ? g.savedAmount / g.goalAmount : 0;
             return (
               <div key={g.id} className={styles.row}>
