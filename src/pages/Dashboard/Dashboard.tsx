@@ -1,18 +1,19 @@
 import { motion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import type { IconType } from 'react-icons';
-import { LuCrown, LuLightbulb, LuPlus, LuReceipt, LuShieldCheck, LuSparkles, LuTarget, LuWallet } from 'react-icons/lu';
+import { LuCrown, LuLightbulb, LuPlus, LuReceipt, LuSparkles, LuTarget, LuWallet } from 'react-icons/lu';
 import { GoArrowRight } from 'react-icons/go';
-import { FaAmazon, FaHouseChimney, FaQuestion } from 'react-icons/fa6';
-import { PiAirplaneTiltFill, PiStudentBold, PiStudentFill } from 'react-icons/pi';
+import { FaAmazon, FaQuestion } from 'react-icons/fa6';
+import { PiStudentBold } from 'react-icons/pi';
 import { IoWaterOutline } from 'react-icons/io5';
 import { TbWorld } from 'react-icons/tb';
 import { SiNetflix, SiSpotify } from 'react-icons/si';
 import { useAuth } from '../../context/AuthContext';
 import { useFinance, useMonthFinance } from '../../context/FinanceContext';
+import { useGoals } from '../../hooks/useGoals';
 import { ALL_CATEGORIES } from '../../data/transactionCategories';
 import { CHART_MONTHS, PREMIUM_PRICE, userPlan } from '../../data/plans';
-import type { FixedBillItem, PiggyBankItemModel } from '../../types/auth';
+import type { FixedBillItem } from '../../types/auth';
 import { brl, pct, signedBrl } from '../../utils/format';
 import { Pill } from '../../components/finance/Pill';
 import { BalanceDelta, ExpenseCard, IncomeCard } from '../../components/finance/MonthCards';
@@ -35,14 +36,6 @@ function greeting() {
 
 /** Ícone da categoria (o mesmo da tela de Transações). */
 const categoryIcon = (id: string): IconType => ALL_CATEGORIES.find((c) => c.id === id)?.icon ?? FaQuestion;
-
-function goalIcon(title: string): IconType {
-  const t = title.toLowerCase();
-  if (t.includes('viagem') || t.includes('férias')) return PiAirplaneTiltFill;
-  if (t.includes('casa') || t.includes('moradia')) return FaHouseChimney;
-  if (t.includes('reserva') || t.includes('emergência') || t.includes('emergencia')) return LuShieldCheck;
-  return PiStudentFill;
-}
 
 function billIcon(title: string): { icon: IconType; color: string; tone: string } {
   const t = title.toLowerCase();
@@ -79,6 +72,7 @@ export function Dashboard({
   dark = false,
   onNewTransaction,
   onOpenLimits,
+  onOpenGoals,
 }: {
   month: string;
   palette?: PaletteId;
@@ -87,11 +81,15 @@ export function Dashboard({
   onNewTransaction?: () => void;
   /** "Ver todos" do cartão de limites abre Transações na aba "Limites do mês". */
   onOpenLimits?: () => void;
+  /** "Nova meta", "Criar novo cofrinho" e os cofrinhos abrem a aba Metas. */
+  onOpenGoals?: () => void;
 }) {
   const [ringStart, ringEnd] =
     palette === 'padrao' ? ['#7c3aed', '#e879f9'] : [seriesColor(palette, dark, 0, ''), seriesColor(palette, dark, 0, '')];
   const { user } = useAuth();
-  const { piggyBanks, fixedBills, subscriptions } = useFinance();
+  const { fixedBills, subscriptions } = useFinance();
+  // Cofrinhos: os mesmos dados (e contas) da aba Metas
+  const { totals: goalTotals, canCreate: canCreateGoal } = useGoals(month);
   // Gráfico de evolução: últimos 3 meses no plano grátis, o ano todo no Premium
   const plan = userPlan(user);
   const chartMonths = CHART_MONTHS[plan];
@@ -112,11 +110,8 @@ export function Dashboard({
   const subsTotal = subscriptions.reduce((acc, s) => acc + (s.price || 0), 0);
 
   // Insight: a meta mais próxima de terminar com o valor semanal sugerido
-  const openGoals = piggyBanks.filter((g) => g.goalAmount > g.savedAmount);
-  const focusGoal: PiggyBankItemModel | undefined = [...openGoals].sort(
-    (a, b) => a.goalAmount - a.savedAmount - (b.goalAmount - b.savedAmount),
-  )[0];
-  const weeksToGoal = focusGoal ? Math.ceil((focusGoal.goalAmount - focusGoal.savedAmount) / WEEKLY_SAVING) : 0;
+  const focusGoal = [...goalTotals.active].sort((a, b) => a.left - b.left)[0];
+  const weeksToGoal = focusGoal ? Math.ceil(focusGoal.left / WEEKLY_SAVING) : 0;
 
   const monthName = month.split(' ')[0].toLowerCase();
 
@@ -284,41 +279,40 @@ export function Dashboard({
         <motion.article {...fade(7)} className={`${styles.card} ${styles.listCard}`}>
           <header className={styles.cardHead}>
             <h3>Cofrinhos</h3>
-            <button type="button" className={styles.link}>
+            <button type="button" className={styles.link} onClick={onOpenGoals}>
               <LuPlus size={14} /> Nova meta
             </button>
           </header>
-          {piggyBanks.slice(0, 3).map((g, i) => {
-            const Icon = goalIcon(g.title);
-            const color = seriesColor(palette, dark, i, g.progressColor || GOAL_COLORS[i % GOAL_COLORS.length]);
-            const progress = g.goalAmount ? g.savedAmount / g.goalAmount : 0;
+          {goalTotals.active.slice(0, 3).map((g, i) => {
+            const Icon = g.type.icon;
+            const color = seriesColor(palette, dark, i, g.color || GOAL_COLORS[i % GOAL_COLORS.length]);
             return (
-              <div key={g.id} className={styles.row}>
+              <button key={g.id} type="button" className={`${styles.row} ${styles.rowButton}`} onClick={onOpenGoals}>
                 <span className={styles.rowIcon} style={{ background: `${color}1f` }}>
                   <Icon size={19} color={color} />
                 </span>
                 <div className={styles.rowText}>
                   {g.title}
                   <small>
-                    {brl(g.savedAmount, 0)} de {g.goalAmount.toLocaleString('pt-BR')}
+                    {brl(g.saved, 0)} de {g.target.toLocaleString('pt-BR')}
                   </small>
                 </div>
                 <span className={styles.rowValue} style={{ color }}>
-                  {pct(progress)}
+                  {pct(g.progress)}
                 </span>
-              </div>
+              </button>
             );
           })}
-          {piggyBanks.length < 4 && (
-            <div className={`${styles.row} ${styles.newRow}`}>
+          {goalTotals.active.length < 4 && (
+            <button type="button" className={`${styles.row} ${styles.rowButton} ${styles.newRow}`} onClick={onOpenGoals}>
               <span className={`${styles.rowIcon} ${styles.toneSoft}`}>
                 <LuPlus size={17} color="#7c3aed" />
               </span>
               <div className={`${styles.rowText} ${styles.muted}`}>
-                Criar novo cofrinho
+                {canCreateGoal ? 'Criar novo cofrinho' : 'Mais cofrinhos no Premium'}
                 <small>Ex.: carro, curso, casamento</small>
               </div>
-            </div>
+            </button>
           )}
         </motion.article>
 

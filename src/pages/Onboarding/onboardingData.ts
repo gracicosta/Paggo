@@ -7,7 +7,9 @@ import type {
   UserFinancialProfile,
 } from '../../types/auth';
 import { brl as brlDigits, brlInt } from '../../utils/format';
-import { MONTH_NAMES, monthName, toIsoMonth } from '../../utils/dates';
+import { MONTH_NAMES, monthName, toIsoDate, toIsoMonth } from '../../utils/dates';
+import { GOAL_TYPES, type GoalTypeInfo } from '../../data/goalTypes';
+import { deadlineIn } from '../../data/goalSummary';
 
 export { brlInt, monthName };
 
@@ -120,28 +122,23 @@ export const LIMIT_CATEGORIES: LimitCategory[] = [
   { id: 'saude', label: 'Saúde', emoji: '💊', tone: 'r', share: 0.06, dashboardId: 'saude', color: '#ef4444', background: '#FEE2E2' },
 ];
 
-export interface GoalType {
-  id: string;
-  label: string;
-  emoji: string;
+/** Tipo de meta do passo 6: o de data/goalTypes.ts com a cor do emoji usada no onboarding. */
+export interface GoalType extends GoalTypeInfo {
   tone: Tone;
-  /** Valor sugerido para a meta. */
-  amount: number;
-  /** "você viaja em…", "sua reserva fica pronta em…" */
-  verb: string;
-  color: string;
 }
 
-export const GOALS: GoalType[] = [
-  { id: 'viagem', label: 'Viagem', emoji: '✈️', tone: 'b', amount: 4000, verb: 'você viaja em', color: '#7C3AED' },
-  { id: 'reserva', label: 'Reserva de emergência', emoji: '🛟', tone: 'g', amount: 6000, verb: 'sua reserva fica pronta em', color: '#22C55E' },
-  { id: 'casa', label: 'Casa própria', emoji: '🏡', tone: 'p', amount: 30000, verb: 'você junta a entrada em', color: '#6D28D9' },
-  { id: 'carro', label: 'Carro', emoji: '🚗', tone: 'o', amount: 15000, verb: 'você chega lá em', color: '#F97316' },
-  { id: 'estudos', label: 'Estudos', emoji: '🎓', tone: 'y', amount: 3000, verb: 'você começa a estudar em', color: '#F59E0B' },
-  { id: 'casamento', label: 'Casamento', emoji: '💍', tone: 'r', amount: 20000, verb: 'você chega lá em', color: '#E11D48' },
-  { id: 'guardar', label: 'Guardar dinheiro', emoji: '🐷', tone: 't', amount: 2000, verb: 'você completa a meta em', color: '#0F766E' },
-  { id: 'outra', label: 'Outra', emoji: '➕', tone: 'p', amount: 1000, verb: 'você chega lá em', color: '#7C3AED' },
-];
+const GOAL_TONES: Record<string, Tone> = {
+  viagem: 'b',
+  reserva: 'g',
+  casa: 'p',
+  carro: 'o',
+  estudos: 'y',
+  casamento: 'r',
+  guardar: 't',
+  outra: 'p',
+};
+
+export const GOALS: GoalType[] = GOAL_TYPES.map((g) => ({ ...g, tone: GOAL_TONES[g.id] ?? 'p' }));
 
 /** Prazos rápidos; "Escolher data" calcula os meses a partir do mês escolhido. */
 export const GOAL_MONTHS = [
@@ -400,6 +397,9 @@ export function toFinancialProfile(s: OnboardingState, plan: AiPlanAction[]): Us
             progress: 0,
             iconType: goal.id,
             progressColor: goal.color,
+            deadline: deadlineIn(s.goalMonths),
+            createdAt: toIsoDate(new Date()),
+            moves: [],
           },
         ]
       : [];

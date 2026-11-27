@@ -25,15 +25,34 @@ export interface CategoryBudgetItem {
   background: string;
 }
 
+/** Um depósito (valor positivo) ou uma retirada (valor negativo) num cofrinho. */
+export interface GoalMove {
+  id: string;
+  /** Data no formato aaaa-mm-dd. */
+  date: string;
+  amount: number;
+}
+
+/** Cofrinho de uma meta (aba Metas e cartão "Cofrinhos" do Dashboard). */
 export interface PiggyBankItemModel {
   id: number;
   title: string;
   description: string;
   savedAmount: number;
   goalAmount: number;
+  /** Porcentagem guardada (0 a 100). Mantida para quem já tinha dados salvos; as telas calculam de novo. */
   progress: number;
+  /** Tipo da meta (viagem, reserva, casa…; veja data/goalTypes.ts). */
   iconType?: string;
   progressColor: string;
+  /** Mês em que a meta deve estar completa, "aaaa-mm" (sem o campo = sem prazo). */
+  deadline?: string;
+  /** Dia em que a meta foi criada, "aaaa-mm-dd". */
+  createdAt?: string;
+  /** Depósitos e retiradas, do mais antigo para o mais novo. */
+  moves?: GoalMove[];
+  /** Dia em que o valor da meta foi alcançado, "aaaa-mm-dd". */
+  completedAt?: string;
 }
 
 /** Um passo do plano que a IA monta no fim do onboarding. */

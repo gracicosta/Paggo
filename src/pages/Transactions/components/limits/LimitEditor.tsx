@@ -2,7 +2,8 @@ import { useId, useState } from 'react';
 import { LuCheck, LuMinus, LuPlus, LuSparkles, LuTrash2 } from 'react-icons/lu';
 import { categoryById } from '../../../../data/transactionCategories';
 import type { PaletteId } from '../../../../types/prefs';
-import { brl, brlInt, centsToText, pct, typedCents } from '../../../../utils/format';
+import { brl, brlInt, pct } from '../../../../utils/format';
+import { AmountField } from '../../../../components/ui/AmountField';
 import { catColor } from '../../transactionUtils';
 import { quickValues, suggestedLimit } from '../../limitUtils';
 import txStyles from '../../Transactions.module.css';
@@ -74,22 +75,15 @@ export function LimitEditor({ categoryId, limit, spent, average, palette, dark, 
         <button type="button" onClick={() => step(-1)} aria-label={`Diminuir ${STEP} reais`} disabled={cents <= 0}>
           <LuMinus size={18} />
         </button>
-        <label className={`${txStyles.amountBox} ${error ? txStyles.fieldError : ''}`} htmlFor={`${uid}-limit`}>
-          <small>Limite por mês</small>
-          <span>
-            <em>R$</em>
-            <input
-              id={`${uid}-limit`}
-              inputMode="numeric"
-              autoComplete="off"
-              autoFocus={autoFocus}
-              value={centsToText(cents)}
-              aria-invalid={!!error}
-              aria-describedby={error ? `${uid}-err` : undefined}
-              onChange={(e) => setCents(typedCents(e.target.value))}
-            />
-          </span>
-        </label>
+        <AmountField
+          id={`${uid}-limit`}
+          label="Limite por mês"
+          cents={cents}
+          onCentsChange={setCents}
+          invalid={!!error}
+          describedBy={error ? `${uid}-err` : undefined}
+          autoFocus={autoFocus}
+        />
         <button type="button" onClick={() => step(1)} aria-label={`Aumentar ${STEP} reais`}>
           <LuPlus size={18} />
         </button>

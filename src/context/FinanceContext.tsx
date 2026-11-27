@@ -17,6 +17,8 @@ interface FinanceContextType {
   piggyBanks: PiggyBankItemModel[];
   /** Troca a lista de limites por categoria (criar, editar ou remover) e salva no perfil. */
   saveCategoryBudgets: (budgets: CategoryBudgetItem[]) => void;
+  /** Troca a lista de cofrinhos (depositar, retirar, criar ou excluir meta) e salva no perfil. Use pelo hook useGoals. */
+  savePiggyBanks: (piggyBanks: PiggyBankItemModel[]) => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -30,6 +32,11 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [profile, saveFinancialProfile],
   );
 
+  const savePiggyBanks = useCallback(
+    (piggyBanks: PiggyBankItemModel[]) => saveFinancialProfile({ ...profile, piggyBanks }),
+    [profile, saveFinancialProfile],
+  );
+
   const value = useMemo(
     () => ({
       fixedBills: profile.fixedBills || [],
@@ -37,8 +44,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       categoryBudgets: profile.categoryBudgets || [],
       piggyBanks: profile.piggyBanks || [],
       saveCategoryBudgets,
+      savePiggyBanks,
     }),
-    [profile, saveCategoryBudgets],
+    [profile, saveCategoryBudgets, savePiggyBanks],
   );
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;

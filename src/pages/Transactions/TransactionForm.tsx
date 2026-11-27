@@ -4,10 +4,10 @@ import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from '../../da
 import { toIsoDate } from '../../utils/dates';
 import type { PaletteId } from '../../types/prefs';
 import type { PaymentMethod, TransactionInput, TransactionKind } from '../../types/transactions';
-import { centsToText, typedCents } from '../../utils/format';
 import { catColor } from './transactionUtils';
 import { SelectMenu } from '../../components/ui/SelectMenu';
 import { DatePicker } from '../../components/ui/DatePicker';
+import { AmountField } from '../../components/ui/AmountField';
 import styles from './Transactions.module.css';
 
 interface Props {
@@ -116,22 +116,15 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
         </button>
       </div>
 
-      <label className={`${styles.amountBox} ${amountError ? styles.fieldError : ''}`} htmlFor={`${uid}-amount`}>
-        <small>1 · Quanto foi?</small>
-        <span>
-          <em>R$</em>
-          <input
-            ref={amountRef}
-            id={`${uid}-amount`}
-            inputMode="numeric"
-            autoComplete="off"
-            value={centsToText(cents)}
-            aria-invalid={!!amountError}
-            aria-describedby={amountError ? `${uid}-amount-err` : undefined}
-            onChange={(e) => setCents(typedCents(e.target.value))}
-          />
-        </span>
-      </label>
+      <AmountField
+        ref={amountRef}
+        id={`${uid}-amount`}
+        label="1 · Quanto foi?"
+        cents={cents}
+        onCentsChange={setCents}
+        invalid={!!amountError}
+        describedBy={amountError ? `${uid}-amount-err` : undefined}
+      />
       {amountError && (
         <p id={`${uid}-amount-err`} className={styles.errorText} role="alert">
           {amountError}

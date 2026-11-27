@@ -2,7 +2,7 @@ import { motion, type HTMLMotionProps } from 'motion/react';
 import type { IconType } from 'react-icons';
 import styles from './SummaryCard.module.css';
 
-export type SummaryTone = 'ok' | 'bad' | 'warn';
+export type SummaryTone = 'ok' | 'bad' | 'warn' | 'info';
 
 interface Props {
   title: string;

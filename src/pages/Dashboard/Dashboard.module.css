@@ -340,6 +340,27 @@
   border-top: 1px solid var(--border);
 }
 
+/* Cofrinhos: a linha inteira abre a aba Metas */
+.rowButton {
+  width: 100%;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rowButton:hover .rowText {
+  color: var(--link);
+}
+
+.rowButton:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
 .rowIcon {
   width: 36px;
   height: 36px;

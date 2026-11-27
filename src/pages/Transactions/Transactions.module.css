@@ -578,62 +578,6 @@
   color: var(--bad);
 }
 
-.amountBox {
-  display: block;
-  margin: 0.9em 0 0.25em;
-  padding: 0.8em 1em;
-  border: 2px solid var(--border);
-  border-radius: 1em;
-  background: var(--soft);
-  cursor: text;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
-}
-
-.amountBox:focus-within {
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
-}
-
-.amountBox small {
-  display: block;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 0.8em;
-}
-
-.amountBox span {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35em;
-}
-
-.amountBox em {
-  font-style: normal;
-  color: var(--muted);
-  font-size: 1.1em;
-  font-weight: 700;
-}
-
-.amountBox input {
-  width: 100%;
-  min-width: 0;
-  border: none;
-  outline: none !important;
-  background: transparent;
-  color: var(--text);
-  font-size: 1.9em;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-.fieldError,
-.fieldError:focus-within {
-  border-color: var(--bad);
-}
-
 .errorText {
   margin: 0.2em 0 0;
   color: var(--bad);

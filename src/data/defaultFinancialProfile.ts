@@ -1,3 +1,4 @@
+import { demoPiggyBanks } from './goalSeed';
 import type { AuthUser, UserFinancialProfile } from '../types/auth';
 
 export const DEFAULT_CATEGORIES = [
@@ -26,35 +27,7 @@ export const DEMO_PROFILE: UserFinancialProfile = {
     { id: '3', name: 'Spotify Duo', price: 27.90, dueDay: 5, service: 'spotify', color: '#1DB954' },
   ],
   categoryBudgets: DEFAULT_CATEGORIES,
-  piggyBanks: [
-    {
-      id: 1,
-      title: 'Viagem dos sonhos',
-      description: 'Eurotrip com tudo pago 🌍',
-      savedAmount: 3750,
-      goalAmount: 5000,
-      progress: 75,
-      progressColor: '#7C3AED',
-    },
-    {
-      id: 2,
-      title: 'Reserva de Emergência',
-      description: '6 meses de custos fixos 🛡️',
-      savedAmount: 8400,
-      goalAmount: 12000,
-      progress: 70,
-      progressColor: '#22C55E',
-    },
-    {
-      id: 3,
-      title: 'Setup Home Office & Estudos',
-      description: 'Equipamentos e monitor novo 📚',
-      savedAmount: 1600,
-      goalAmount: 2000,
-      progress: 80,
-      progressColor: '#F59E0B',
-    },
-  ],
+  piggyBanks: demoPiggyBanks(),
 };
 
 /** Perfil usado nas telas: o que a pessoa preencheu no onboarding ou, sem ele, o da conta demo. */

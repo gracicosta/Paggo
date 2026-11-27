@@ -1,0 +1,57 @@
+/* Campo grande de dinheiro (AmountField). Cores vêm do HomeLayout; tamanhos em "em" seguem o A−/A+. */
+
+.box {
+  display: block;
+  margin: 0.9em 0 0.25em;
+  padding: 0.8em 1em;
+  border: 2px solid var(--border);
+  border-radius: 1em;
+  background: var(--soft);
+  cursor: text;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.box:focus-within {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
+}
+
+.box small {
+  display: block;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.8em;
+}
+
+.box span {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.box em {
+  font-style: normal;
+  color: var(--muted);
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.box input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none !important;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.9em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.invalid,
+.invalid:focus-within {
+  border-color: var(--bad);
+}

@@ -1,0 +1,41 @@
+/* Anel de progresso. O tamanho vem do font-size (1em = largura do anel). */
+.ring {
+  font-size: 6.75em;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.track,
+.fill {
+  fill: none;
+  stroke-width: 10;
+}
+
+.track {
+  stroke: var(--track);
+}
+
+.fill {
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.text {
+  position: relative;
+  font-size: 0.19em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,764 @@
+/* Aba "Metas". Cabeçalho, cartões, botões, resumo e grade vêm de Transactions.module.css;
+   valores rápidos, barra do cartão roxo e dica vêm de Limits.module.css. Aqui só o que é desta aba.
+   Tamanhos em "em" para acompanhar o A−/A+. A cor de cada meta chega em --goal-color. */
+
+.kpiOf {
+  font-size: 0.6em;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+/* ---------- Cofrinhos ---------- */
+.goals {
+  padding: 1.1em 1.25em 1.25em;
+}
+
+.goalsHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.7em 1em;
+}
+
+.goalsHead h2 {
+  font-size: 1.1em;
+  font-weight: 800;
+}
+
+.goalsHead button {
+  white-space: nowrap;
+}
+
+.goalsNote {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.86em;
+  font-weight: 600;
+}
+
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.goal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+  min-width: 0;
+  padding: 1.1em;
+  border: 1px solid var(--border);
+  border-radius: 1.25em;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--goal-color) 14%, transparent), transparent 5.5em),
+    var(--surface);
+}
+
+.goalOn {
+  border-color: transparent;
+  box-shadow:
+    0 0 0 2px #8b5cf6,
+    0 0 0 6px rgba(124, 58, 237, 0.12);
+}
+
+.goalHead {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.goalHead > :last-child {
+  margin-left: auto;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.goalIcon {
+  flex: none;
+  width: 2.85em;
+  height: 2.85em;
+  border-radius: 0.9em;
+  display: grid;
+  place-items: center;
+  color: var(--goal-color);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(23, 18, 43, 0.08);
+}
+
+.goalName {
+  min-width: 0;
+}
+
+.goalName b {
+  display: block;
+  font-size: 1.04em;
+  font-weight: 800;
+}
+
+.goalName small {
+  color: var(--muted);
+  font-size: 0.82em;
+  font-weight: 600;
+}
+
+.goalBody {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'ring nums'
+    'ring facts';
+  align-items: center;
+  gap: 0 1.1em;
+}
+
+.ring {
+  grid-area: ring;
+  font-size: 6.75em;
+}
+
+.goalNums {
+  grid-area: nums;
+  align-self: end;
+  min-width: 0;
+}
+
+.goalNums strong {
+  display: block;
+  font-size: 1.5em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.goalNums > span {
+  color: var(--muted);
+  font-size: 0.88em;
+  font-weight: 600;
+}
+
+.facts {
+  grid-area: facts;
+  align-self: start;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5em;
+  margin: 0.65em 0 0;
+}
+
+.facts div {
+  padding: 0.5em 0.65em;
+  border-radius: 0.75em;
+  background: var(--soft);
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: 0.76em;
+  font-weight: 600;
+}
+
+.facts dd {
+  margin: 0;
+  font-size: 0.92em;
+  font-weight: 800;
+}
+
+/* Depósitos dos últimos meses */
+.histHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+  margin-bottom: -0.4em;
+  color: var(--muted);
+  font-size: 0.78em;
+  font-weight: 600;
+}
+
+.histHead b {
+  color: var(--text);
+}
+
+.histWarn,
+.histWarn b {
+  color: var(--warn);
+}
+
+.hist {
+  display: flex;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hist li {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.2em;
+  height: 3.1em;
+  color: var(--muted);
+  font-size: 0.66em;
+  font-weight: 700;
+}
+
+.hist i {
+  display: block;
+  width: 100%;
+  /* --h = depósito do mês ÷ maior depósito (1 = barra cheia de 2em) */
+  height: calc(var(--h, 0.25) * 2em);
+  border-radius: 0.4em 0.4em 0.2em 0.2em;
+}
+
+.histEmpty {
+  background: var(--track);
+}
+
+.histMissed {
+  border: 1px dashed var(--muted);
+  background: repeating-linear-gradient(135deg, var(--track) 0 4px, transparent 4px 8px);
+}
+
+.goalActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5em;
+}
+
+.goalActions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnDeposit {
+  background: linear-gradient(135deg, #059669, #10b981);
+  box-shadow: none;
+}
+
+.iconBtn {
+  width: 2.9em;
+  height: 2.9em;
+  display: grid;
+  place-items: center;
+  border-radius: 0.8em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.iconBtn:hover {
+  color: var(--bad);
+  border-color: var(--bad);
+}
+
+/* "Criar nova meta" (quando ainda cabe meta) */
+.addGoal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 14em;
+  padding: 1.2em;
+  border: 2px dashed var(--border);
+  border-radius: 1.25em;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  cursor: pointer;
+}
+
+.addGoal:hover {
+  border-color: #a78bfa;
+}
+
+.addGoal small {
+  color: var(--muted);
+  font-size: 0.82em;
+}
+
+.addGoal > span {
+  grid-row: auto;
+  align-self: center;
+}
+
+/* Vaga trancada (Premium) */
+.lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65em;
+  padding: 1.4em;
+  text-align: center;
+  border: 2px dashed var(--border);
+  border-radius: 1.25em;
+  background: repeating-linear-gradient(135deg, transparent 0 14px, var(--soft) 14px 28px);
+}
+
+.lockIcon {
+  width: 3.6em;
+  height: 3.6em;
+  border-radius: 1.1em;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #6d28d9, #a855f7);
+  box-shadow: 0 10px 22px rgba(124, 58, 237, 0.35);
+}
+
+.lock > b {
+  font-size: 1.05em;
+}
+
+.lock p {
+  max-width: 21em;
+  color: var(--muted);
+  font-size: 0.88em;
+  line-height: 1.45;
+}
+
+.lock p b {
+  color: var(--text);
+}
+
+.lockIdeas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lockIdeas li {
+  padding: 0.3em 0.65em;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78em;
+  font-weight: 700;
+}
+
+/* "Você usa 3 de 3 metas do plano grátis" */
+.freeBar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6em 0.8em;
+  margin-top: 1em;
+  padding: 0.75em 0.9em;
+  border-radius: 1em;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 0.88em;
+  font-weight: 600;
+}
+
+.freeBar b {
+  color: var(--text);
+}
+
+.freeDots {
+  display: flex;
+  gap: 0.3em;
+}
+
+.freeDots i {
+  width: 1.4em;
+  height: 0.5em;
+  border-radius: 9px;
+  background: var(--track);
+}
+
+.freeDots .dotOn {
+  background: #8b5cf6;
+}
+
+.freeDots .dotLock {
+  background: none;
+  outline: 1px dashed #a78bfa;
+}
+
+.freeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-left: auto;
+  border: none;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Metas concluídas */
+.doneList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  margin: 1em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.done {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.75em 0.9em;
+  border-radius: 1em;
+  border: 1px solid var(--border);
+}
+
+.done .goalIcon {
+  width: 2.6em;
+  height: 2.6em;
+  background: color-mix(in srgb, var(--goal-color) 14%, transparent);
+  box-shadow: none;
+}
+
+.done > :last-child {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 2em 0.75em;
+  text-align: center;
+}
+
+/* ---------- Nova meta (computador) ---------- */
+.newCard {
+  padding: 1.1em 1.25em 1.25em;
+}
+
+.newCard > p {
+  margin: 0.4em 0 0.8em;
+}
+
+.newCard > div[role='group'] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.nameField {
+  margin-top: 0.75em;
+}
+
+.fieldBad {
+  border-color: var(--bad);
+}
+
+/* ---------- Mexer no cofrinho ---------- */
+.moveCard {
+  padding: 1.25em;
+}
+
+.moveWho {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin: 0.9em 0 0.8em;
+}
+
+.moveWho .goalIcon {
+  background: color-mix(in srgb, var(--goal-color) 14%, transparent);
+  box-shadow: none;
+}
+
+.moveWho b {
+  display: block;
+}
+
+.moveWho small {
+  color: var(--muted);
+  font-size: 0.84em;
+}
+
+.moveSwitch button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+}
+
+.moveSwitch button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.moveQuick {
+  margin-top: 0.6em;
+}
+
+.from {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0.75em 0 0;
+  padding: 0.6em 0.75em;
+  border-radius: 0.9em;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.86em;
+  font-weight: 600;
+}
+
+.from b {
+  color: var(--text);
+}
+
+.from span {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.fromWarn {
+  border-color: var(--warn);
+}
+
+.fromWarn span {
+  color: var(--warn);
+}
+
+.after {
+  margin-top: 0.75em;
+  padding: 0.75em 0.85em;
+  border-radius: 0.9em;
+  border: 1px solid var(--border);
+}
+
+.afterRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+  color: var(--muted);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.afterRow b {
+  color: var(--text);
+}
+
+.afterRow small {
+  font-size: 0.94em;
+}
+
+.afterTrack {
+  position: relative;
+  display: block;
+  height: 0.6em;
+  margin: 0.6em 0 0.5em;
+  border-radius: 9px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.afterTrack span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9px;
+  background: var(--goal-color);
+  transition:
+    width 0.3s ease,
+    left 0.3s ease;
+}
+
+.afterTrack .afterPlus {
+  border-radius: 0 9px 9px 0;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--goal-color) 0 5px,
+    color-mix(in srgb, var(--goal-color) 45%, #fff) 5px 9px
+  );
+}
+
+.afterTrack .afterMinus {
+  border-radius: 0 9px 9px 0;
+  background: repeating-linear-gradient(135deg, var(--bad) 0 5px, transparent 5px 9px);
+  opacity: 0.6;
+}
+
+/* ---------- Plano do Paggo ---------- */
+.plan {
+  padding: 1.2em 1.25em;
+  border-radius: 1.3em;
+  color: #fff;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(236, 72, 153, 0.35), transparent 55%),
+    linear-gradient(135deg, #4c1d95, #6d28d9 60%, #9333ea);
+}
+
+.plan h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  font-size: 1.04em;
+  font-weight: 800;
+}
+
+.planSub {
+  margin: 0.25em 0 0.8em;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.86em;
+}
+
+.plan ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan li {
+  display: flex;
+  gap: 0.65em;
+  align-items: flex-start;
+  padding: 0.65em 0.75em;
+  border-radius: 0.9em;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.87em;
+  line-height: 1.45;
+}
+
+.plan li b {
+  color: #fff;
+}
+
+.planNum {
+  flex: none;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 0.5em;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #6d28d9;
+  font-weight: 800;
+  font-size: 0.85em;
+}
+
+.planDone .planNum {
+  background: #34d399;
+  color: #064e3b;
+}
+
+.planChat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  width: 100%;
+  margin-top: 0.8em;
+  padding: 0.7em;
+  border: none;
+  border-radius: 0.8em;
+  background: #fff;
+  color: #5b21b6;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.planChat:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.premiumTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.25em 0.6em;
+  border-radius: 99px;
+  color: #92400e;
+  background: linear-gradient(135deg, #fde68a, #fbbf24);
+  font-size: 0.78em;
+}
+
+.premiumBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+  margin-top: 0.6em;
+}
+
+.premiumBox b {
+  color: var(--text);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1400px) {
+  .goalsNote {
+    display: none;
+  }
+}
+
+/* Tablet e celular: depósito e nova meta abrem numa janela (toque no cartão ou botão "+") */
+@media (max-width: 1100px) {
+  .moveCard,
+  .newCard {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .goalGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .goals {
+    padding: 0.9em 0.75em;
+  }
+
+  .goalsHead > div {
+    width: 100%;
+  }
+
+  .goal {
+    padding: 0.9em;
+  }
+
+  .goalBody {
+    grid-template-areas:
+      'ring nums'
+      'facts facts';
+    gap: 0.8em 0.9em;
+  }
+
+  .ring {
+    font-size: 5.6em;
+  }
+
+  .facts {
+    margin: 0;
+  }
+
+  .goalNums strong {
+    font-size: 1.25em;
+  }
+
+  .freeLink {
+    margin-left: 0;
+  }
+}

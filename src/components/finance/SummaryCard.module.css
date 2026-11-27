@@ -67,6 +67,11 @@
   color: var(--warn);
 }
 
+.info {
+  background: var(--soft);
+  color: var(--link);
+}
+
 /* Cartão roxo (Saldo do mês) */
 .hero {
   border: none;
@@ -107,6 +112,12 @@
 .pillBad {
   background: var(--bad-bg);
   color: var(--bad);
+}
+
+/* Selo neutro roxo-claro ("Começando", "Celular novo · em agosto") */
+.pillInfo {
+  background: var(--soft);
+  color: var(--link);
 }
 
 /* Selo sobre fundo roxo (cartão de saldo) */

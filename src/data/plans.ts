@@ -9,6 +9,8 @@ export const PREMIUM_PRICE = 'R$ 23,90';
 /* Regras do plano grátis */
 export const FREE_SUBSCRIPTIONS = 3;
 export const FREE_CATEGORY_LIMITS = 3;
+/** Metas em andamento ao mesmo tempo (as concluídas não contam). */
+export const FREE_GOALS = 3;
 
 /** Meses no gráfico de evolução do saldo do Dashboard: 3 no grátis, o ano todo (12) no Premium. */
 export const CHART_MONTHS: Record<PlanId, number> = { free: 3, premium: 12 };

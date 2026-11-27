@@ -135,7 +135,7 @@
   }
 }
 
-/* Transações tem lista longa: a página rola normalmente, mesmo no notebook */
+/* Transações e Metas têm listas longas: a página rola normalmente, mesmo no notebook */
 @media (min-width: 1181px) and (min-height: 640px) {
   .shell.scrollable {
     height: auto;

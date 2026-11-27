@@ -4,11 +4,8 @@ import { chartColors } from '../../../utils/palette';
 import type { AiPlanAction } from '../../../types/auth';
 import { StepTitle, type StepProps } from '../OnboardingUi';
 import { GOALS, brlInt, currentMonthLabel, monthSummary } from '../onboardingData';
+import { RichText } from '../../../components/ui/RichText';
 import o from '../Onboarding.module.css';
-
-/** "Separe **R$ 334** no dia 5" → Separe <b>R$ 334</b> no dia 5 */
-const rich = (text: string) =>
-  text.split('**').map((part, i) => (i % 2 ? <b key={i}>{part}</b> : <React.Fragment key={i}>{part}</React.Fragment>));
 
 /** Tempo da "IA pensando" (o plano é calculado na hora; a pausa só dá ritmo à tela). */
 const THINK_MS = 1100;
@@ -53,7 +50,7 @@ export const StepPlan: React.FC<StepProps & { plan: AiPlanAction[] }> = ({ state
                 {i + 1}
               </span>
               <p>
-                {rich(a.text)}
+                <RichText text={a.text} />
                 <small>{a.detail}</small>
               </p>
               <span className={`${o.tag} ${a.tag === 'Atenção' ? o.tagWarn : ''}`}>{a.tag}</span>
