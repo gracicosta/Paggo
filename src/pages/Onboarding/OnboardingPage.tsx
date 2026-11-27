@@ -50,7 +50,7 @@ function loadDraft(userId: string): OnboardingState {
  * As respostas ficam num rascunho no navegador: recarregar a página não perde nada.
  */
 export const OnboardingPage: React.FC = () => {
-  const { user, saveFinancialProfile } = useAuth();
+  const { user, saveFinancialProfile, logout } = useAuth();
   const userId = user?.id ?? 'anon';
   const firstName = (user?.name ?? '').trim().split(/\s+/)[0] ?? '';
 
@@ -270,8 +270,20 @@ export const OnboardingPage: React.FC = () => {
             {step === 7 && <StepPlan {...stepProps} plan={plan} />}
 
             <div className={o.btns}>
-              {step > 1 && (
+              {step > 1 ? (
                 <button type="button" className={o.back} onClick={() => goTo(step - 1)}>
+                  <LuArrowLeft size={18} strokeWidth={2.2} aria-hidden="true" /> Voltar
+                </button>
+              ) : (
+                // Passo 1: volta para a tela inicial (login). O rascunho fica salvo e
+                // o onboarding continua de onde parou quando a pessoa entrar de novo.
+                <button
+                  type="button"
+                  className={o.back}
+                  onClick={logout}
+                  aria-label="Voltar para a tela inicial"
+                  title="Voltar para a tela inicial"
+                >
                   <LuArrowLeft size={18} strokeWidth={2.2} aria-hidden="true" /> Voltar
                 </button>
               )}
