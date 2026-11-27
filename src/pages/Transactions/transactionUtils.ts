@@ -3,7 +3,8 @@ import { seriesColor } from '../../utils/palette';
 import type { PaletteId } from '../../types/prefs';
 import { MONTHS_LOWER, WEEKDAYS, addDays, toIsoDate } from '../../utils/dates';
 import type { Transaction } from '../../types/transactions';
-import type { FixedBillItem } from '../../types/auth';
+import type { CategoryBudgetItem, FixedBillItem } from '../../types/auth';
+import { buildLimitRows, type LimitRowData } from './limitUtils';
 
 /** Cor da categoria: a própria na paleta padrão, ou a da paleta de daltonismo escolhida. */
 export const catColor = (id: string, palette: PaletteId, dark: boolean) =>
@@ -59,24 +60,8 @@ export function impulseComparison(impulseTotal: number, fixedBills: FixedBillIte
   return `Dava para pagar ${times} ${times === 1 ? 'mês' : 'meses'} de ${name}.`;
 }
 
-export interface LimitAlert {
-  id: string;
-  label: string;
-  /** Fração do limite já usada (1 = 100%). */
-  used: number;
-  /** Quanto ainda falta (negativo = passou do limite). */
-  left: number;
-}
+/** Aviso de limite do cartão "Para onde foi o dinheiro" (mesma conta da aba Limites). */
+export type LimitAlert = Pick<LimitRowData, 'id' | 'label' | 'used' | 'left'>;
 
 /** Categoria mais perto de estourar o limite (LIM-RF02/RF03), ou undefined se não houver limites. */
-export function closestLimit(budgets: Array<{ id: string; limit: number; spent: number }>): LimitAlert | undefined {
-  return budgets
-    .filter((b) => b.limit > 0)
-    .map((b) => ({
-      id: b.id,
-      label: categoryById(b.id).label,
-      used: b.spent / b.limit,
-      left: b.limit - b.spent,
-    }))
-    .sort((a, b) => b.used - a.used)[0];
-}
+export const closestLimit = (budgets: CategoryBudgetItem[]): LimitAlert | undefined => buildLimitRows(budgets)[0];

@@ -4,6 +4,7 @@ import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from '../../da
 import { toIsoDate } from '../../utils/dates';
 import type { PaletteId } from '../../types/prefs';
 import type { PaymentMethod, TransactionInput, TransactionKind } from '../../types/transactions';
+import { centsToText, typedCents } from '../../utils/format';
 import { catColor } from './transactionUtils';
 import { SelectMenu } from '../../components/ui/SelectMenu';
 import { DatePicker } from '../../components/ui/DatePicker';
@@ -20,10 +21,6 @@ interface Props {
   onCancel?: () => void;
   autoFocus?: boolean;
 }
-
-/** "4590" (centavos digitados) → "45,90" */
-const centsToText = (cents: number) =>
-  (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export function TransactionForm({ initial, variant, palette, dark, onSave, onCancel, autoFocus }: Props) {
   const uid = useId();
@@ -131,11 +128,7 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
             value={centsToText(cents)}
             aria-invalid={!!amountError}
             aria-describedby={amountError ? `${uid}-amount-err` : undefined}
-            onChange={(e) => {
-              // Caixa eletrônico: cada número digitado entra pela direita (4 → 0,04 → 0,45 → 4,59)
-              const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
-              setCents(Number(digits || 0));
-            }}
+            onChange={(e) => setCents(typedCents(e.target.value))}
           />
         </span>
       </label>

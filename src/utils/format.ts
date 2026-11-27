@@ -22,3 +22,13 @@ export const pct = (value: number) => `${Math.round(Math.abs(value) * 100)}%`;
 
 /** Para a busca: ignora acentos e maiúsculas. */
 export const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+/** Centavos → texto do campo de valor: 4590 → "45,90". */
+export const centsToText = (cents: number) =>
+  (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/**
+ * Campo de valor estilo caixa eletrônico: cada número digitado entra pela direita
+ * (4 → 0,04 → 0,45 → 4,59). Recebe o texto do campo e devolve os centavos.
+ */
+export const typedCents = (text: string) => Number(text.replace(/\D/g, '').slice(0, 11) || 0);

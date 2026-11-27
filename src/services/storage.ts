@@ -18,6 +18,8 @@ export const STORAGE_KEYS = {
   rememberEmail: 'paggo_remember_email',
   dashboardTheme: 'paggo_theme',
   activePage: 'paggo_page',
+  /** Dentro de Transações: "lancamentos" ou "limites". */
+  transactionsView: 'paggo_transactions_view',
   onboardingDraft: (userId: string) => `paggo_onboarding_draft_${userId}`,
   transactions: (userId: string) => `paggo_transactions_${userId}`,
 } as const;

@@ -78,12 +78,15 @@ export function Dashboard({
   palette = 'padrao',
   dark = false,
   onNewTransaction,
+  onOpenLimits,
 }: {
   month: string;
   palette?: PaletteId;
   dark?: boolean;
   /** "Nova transação" abre a tela de Transações. */
   onNewTransaction?: () => void;
+  /** "Ver todos" do cartão de limites abre Transações na aba "Limites do mês". */
+  onOpenLimits?: () => void;
 }) {
   const [ringStart, ringEnd] =
     palette === 'padrao' ? ['#7c3aed', '#e879f9'] : [seriesColor(palette, dark, 0, ''), seriesColor(palette, dark, 0, '')];
@@ -253,7 +256,7 @@ export function Dashboard({
         <motion.article {...fade(6)} className={`${styles.card} ${styles.listCard}`}>
           <header className={styles.cardHead}>
             <h3>Limites por categoria</h3>
-            <button type="button" className={styles.link}>
+            <button type="button" className={styles.link} onClick={onOpenLimits}>
               Ver todos <GoArrowRight size={14} />
             </button>
           </header>

@@ -99,6 +99,11 @@
   color: var(--ok);
 }
 
+.pillWarn {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--warn);
+}
+
 .pillBad {
   background: var(--bad-bg);
   color: var(--bad);

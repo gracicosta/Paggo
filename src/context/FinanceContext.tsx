@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { useTransactions } from './TransactionsContext';
 import { activeProfile } from '../data/defaultFinancialProfile';
@@ -15,13 +15,20 @@ interface FinanceContextType {
   subscriptions: SubscriptionItem[];
   categoryBudgets: CategoryBudgetItem[];
   piggyBanks: PiggyBankItemModel[];
+  /** Troca a lista de limites por categoria (criar, editar ou remover) e salva no perfil. */
+  saveCategoryBudgets: (budgets: CategoryBudgetItem[]) => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
 export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, saveFinancialProfile } = useAuth();
   const profile = activeProfile(user);
+
+  const saveCategoryBudgets = useCallback(
+    (categoryBudgets: CategoryBudgetItem[]) => saveFinancialProfile({ ...profile, categoryBudgets }),
+    [profile, saveFinancialProfile],
+  );
 
   const value = useMemo(
     () => ({
@@ -29,8 +36,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       subscriptions: profile.subscriptions || [],
       categoryBudgets: profile.categoryBudgets || [],
       piggyBanks: profile.piggyBanks || [],
+      saveCategoryBudgets,
     }),
-    [profile],
+    [profile, saveCategoryBudgets],
   );
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;

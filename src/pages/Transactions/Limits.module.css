@@ -1,0 +1,587 @@
+/* Aba "Limites do mês". Cabeçalho, cartões, botões, resumo e grade vêm de Transactions.module.css;
+   aqui só o que é desta aba. Tamanhos em "em" para acompanhar o A−/A+. */
+
+/* ---------- Lançamentos | Limites do mês ---------- */
+.viewTabs {
+  display: flex;
+  gap: 0.25em;
+  padding: 0.25em;
+  margin: -0.3em 0 1em;
+  border-radius: 0.9em;
+  background: var(--soft);
+  align-self: flex-start;
+}
+
+.viewTabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  padding: 0.55em 1em;
+  border: none;
+  border-radius: 0.7em;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.viewTabs .viewOn {
+  background: var(--surface);
+  color: var(--link);
+  box-shadow: 0 1px 4px rgba(23, 18, 43, 0.1);
+}
+
+.viewTabs button:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* ---------- Barra do cartão roxo ---------- */
+.meter {
+  display: block;
+  height: 0.5em;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  border-radius: 9px;
+  background: #fff;
+}
+
+/* ---------- Lista ---------- */
+.limits {
+  padding: 1.1em 1.25em 0.8em;
+}
+
+.limitsHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.7em 1em;
+  margin-bottom: 0.4em;
+}
+
+.limitsHead button {
+  white-space: nowrap;
+}
+
+.limitsHead h2 {
+  font-size: 1.1em;
+  font-weight: 800;
+}
+
+.legendInline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em 0.9em;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.legendInline li {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.legendInline i {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 3px;
+}
+
+.limitList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.limitRow {
+  position: relative;
+  border-radius: 1em;
+}
+
+.limitRow + .limitRow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0.75em;
+  right: 0.75em;
+  border-top: 1px solid var(--border);
+}
+
+.limitRow:hover,
+.limitRow:focus-within,
+.limitRowOn {
+  background: var(--soft);
+}
+
+.limitRowOn {
+  box-shadow: inset 0 0 0 1.5px #a78bfa;
+}
+
+.limitRow:hover::before,
+.limitRow:focus-within::before,
+.limitRowOn::before,
+.limitRow:hover + .limitRow::before,
+.limitRow:focus-within + .limitRow::before,
+.limitRowOn + .limitRow::before {
+  display: none;
+}
+
+.limitOpen {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2.75em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35em 0.9em;
+  padding: 0.85em 0.75em;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.limitOpen:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: -3px;
+  border-radius: 1em;
+}
+
+.limitIcon {
+  width: 2.75em;
+  height: 2.75em;
+  border-radius: 0.85em;
+  display: grid;
+  place-items: center;
+  grid-row: span 3;
+  align-self: start;
+  background: var(--soft);
+  color: var(--link);
+}
+
+.limitName {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 0.6em;
+  min-width: 0;
+}
+
+.limitName b {
+  font-size: 1em;
+  font-weight: 700;
+}
+
+.limitName > span {
+  color: var(--muted);
+  font-size: 0.88em;
+}
+
+.limitName strong {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.limitPct {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5em;
+  font-size: 1.1em;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  /* espaço para o lápis */
+  padding-right: 2.2em;
+}
+
+.limitPct > span {
+  font-size: 0.68em;
+}
+
+.track {
+  grid-column: 2 / 4;
+  position: relative;
+  height: 0.75em;
+  border-radius: 9px;
+  background: var(--track);
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 9px;
+  transition: width 0.4s ease;
+}
+
+.fillOk {
+  background: var(--ok);
+}
+
+.fillWarn {
+  background: #f59e0b;
+}
+
+/* Estourou: listras, para não depender só da cor */
+.fillBad {
+  background: repeating-linear-gradient(135deg, var(--bad) 0 0.5em, color-mix(in srgb, var(--bad) 70%, #fff) 0.5em 0.85em);
+}
+
+/* Paletas de daltonismo: o "atenção" usa a cor de aviso da paleta */
+:global([class*='pal_']) .fillWarn {
+  background: var(--warn);
+}
+
+/* Marca dos 80% */
+.mark80 {
+  position: absolute;
+  left: 80%;
+  top: -0.2em;
+  bottom: -0.2em;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--muted);
+  opacity: 0.45;
+}
+
+.limitNote {
+  grid-column: 2 / 4;
+  color: var(--muted);
+  font-size: 0.84em;
+  line-height: 1.45;
+}
+
+.limitNote svg {
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 0.25em;
+}
+
+.limitNote b {
+  color: var(--text);
+}
+
+.limitNote .overText {
+  color: var(--bad);
+}
+
+/* Lápis: aparece ao passar o mouse e na linha aberta no editor */
+.limitEdit {
+  position: absolute;
+  top: 0.75em;
+  right: 0.75em;
+  width: 2.1em;
+  height: 2.1em;
+  display: grid;
+  place-items: center;
+  border-radius: 0.65em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.limitRow:hover .limitEdit,
+.limitRow:focus-within .limitEdit,
+.limitRowOn .limitEdit {
+  opacity: 1;
+}
+
+.emptyFilter {
+  padding: 1.5em 0.75em;
+  text-align: center;
+}
+
+.addRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin: 0.5em 0 0.4em;
+  padding: 0.85em;
+  border: 2px dashed var(--border);
+  border-radius: 1em;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.addRow:hover {
+  border-color: #a78bfa;
+}
+
+.addRow .limitIcon {
+  grid-row: auto;
+  align-self: center;
+}
+
+.addRow small {
+  display: block;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.85em;
+}
+
+/* ---------- Editor ---------- */
+.editorCard,
+.newCard {
+  padding: 1.25em;
+}
+
+.newCard > p {
+  margin: 0.4em 0 0.8em;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.editorWho {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin: 0.9em 0 0.2em;
+}
+
+.editorWho .limitIcon {
+  grid-row: auto;
+  align-self: center;
+}
+
+.editorWho b {
+  display: block;
+}
+
+.editorWho small {
+  color: var(--muted);
+  font-size: 0.84em;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: 0.6em;
+}
+
+.stepper > label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.stepper > button {
+  flex: none;
+  width: 2.9em;
+  height: 2.9em;
+  display: grid;
+  place-items: center;
+  border-radius: 0.9em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.stepper > button:hover {
+  border-color: #8b5cf6;
+}
+
+.stepper > button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quickValues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+}
+
+.quickValues button {
+  padding: 0.5em 0.8em;
+  border-radius: 0.8em;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.86em;
+  cursor: pointer;
+}
+
+.quickValues button:hover {
+  border-color: #a78bfa;
+}
+
+.quickValues .quickOn {
+  border-color: #a78bfa;
+  background: var(--soft);
+  color: var(--link);
+}
+
+.hint {
+  display: flex;
+  gap: 0.6em;
+  align-items: flex-start;
+  margin: 0.8em 0 0;
+  padding: 0.7em 0.8em;
+  border-radius: 0.9em;
+  background: var(--soft);
+  font-size: 0.86em;
+  line-height: 1.45;
+}
+
+.hint svg {
+  flex: none;
+  margin-top: 0.1em;
+  color: var(--link);
+}
+
+.hint b {
+  color: var(--link);
+}
+
+.btnRemove {
+  color: var(--bad);
+}
+
+.dialogText {
+  margin: 0.6em 0 0.8em;
+}
+
+/* ---------- Dica do Paggo ---------- */
+.tip {
+  padding: 1.15em 1.25em;
+  border-radius: 1.3em;
+  color: #fff;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(236, 72, 153, 0.35), transparent 55%),
+    linear-gradient(135deg, #4c1d95, #6d28d9 60%, #9333ea);
+}
+
+.tip h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  margin-bottom: 0.4em;
+  font-size: 1.02em;
+  font-weight: 800;
+}
+
+.tip p {
+  font-size: 0.92em;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tip b {
+  color: #fff;
+}
+
+.tip button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 0.8em;
+  padding: 0.5em 0.8em;
+  border-radius: 0.7em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.86em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tip button:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.tip button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---------- Responsivo ---------- */
+/* Tablet e celular: o editor e a grade de "Novo limite" abrem numa janela (botão "+" e toque na linha) */
+@media (max-width: 1100px) {
+  .editorCard,
+  .newCard {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .viewTabs {
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .limits {
+    padding: 0.9em 0.75em 0.6em;
+  }
+
+  .limitsHead > div {
+    width: 100%;
+  }
+
+  .legendInline {
+    margin: 0;
+  }
+
+  .limitOpen {
+    grid-template-columns: 2.4em minmax(0, 1fr) auto;
+    gap: 0.3em 0.65em;
+    padding: 0.75em 0.3em;
+  }
+
+  .limitIcon {
+    width: 2.4em;
+    height: 2.4em;
+  }
+
+  .limitName {
+    flex-direction: column;
+  }
+
+  .limitName > span {
+    white-space: nowrap;
+    font-size: 0.82em;
+  }
+
+  .limitPct {
+    padding-right: 0;
+    font-size: 1em;
+  }
+
+  .limitEdit {
+    display: none;
+  }
+
+  .limitNote {
+    font-size: 0.8em;
+  }
+}

@@ -20,6 +20,7 @@ import { CategoryDonut } from './components/CategoryDonut';
 import { DeleteConfirm } from './components/DeleteConfirm';
 import { UndoToast } from './components/UndoToast';
 import { LimitAlertNote } from './components/LimitAlertNote';
+import { ViewTabs, type TransactionsView } from './components/ViewTabs';
 import { useTransactionFilters } from './hooks/useTransactionFilters';
 import { closestLimit, dayLabel, impulseComparison, topCategories } from './transactionUtils';
 import styles from './Transactions.module.css';
@@ -36,6 +37,8 @@ export interface TransactionsPageProps {
   month: string;
   palette: PaletteId;
   dark: boolean;
+  /** Troca para a aba "Limites do mês". */
+  onViewChange: (view: TransactionsView) => void;
 }
 
 /**
@@ -43,7 +46,7 @@ export interface TransactionsPageProps {
  * registro rápido em 3 toques, editar/excluir com confirmação e "Foi por impulso?".
  * Esta tela só monta as peças: filtros em hooks/, linhas e modais em components/, contas em transactionUtils.
  */
-export function TransactionsPage({ month, palette, dark }: TransactionsPageProps) {
+export function TransactionsPage({ month, palette, dark, onViewChange }: TransactionsPageProps) {
   const { transactions, addTransaction, updateTransaction, removeTransaction, restoreTransaction } = useTransactions();
   const { fixedBills } = useFinance();
   // Mesmos números do Dashboard (uma fonte só): o que muda aqui aparece lá na hora
@@ -105,6 +108,8 @@ export function TransactionsPage({ month, palette, dark }: TransactionsPageProps
           </button>
         </div>
       </motion.section>
+
+      <ViewTabs view="lancamentos" onChange={onViewChange} />
 
       {/* ---------- Resumo (mesmos cartões do Dashboard) ---------- */}
       <section className={styles.kpis} aria-label={`Resumo de ${keys.name}`}>
