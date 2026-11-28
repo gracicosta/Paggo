@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 .env.example
+
+# Framework Onion (repositório git embutido, só local)
+onion-antigravity/
