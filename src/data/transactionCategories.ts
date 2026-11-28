@@ -72,3 +72,33 @@ export const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: IconType
 ];
 
 export const methodLabel = (id: PaymentMethod) => PAYMENT_METHODS.find((m) => m.id === id)?.label ?? id;
+
+/**
+ * Categorização automática por palavras-chave da descrição — o mesmo mapa do servidor
+ * (server/src/utils/categorize.ts), para a sugestão aparecer enquanto a pessoa digita.
+ */
+const EXPENSE_KEYWORDS: Array<[string, string[]]> = [
+  ['assinaturas', ['netflix', 'spotify', 'amazon prime', 'prime video', 'disney', 'hbo', 'youtube premium', 'globoplay', 'deezer', 'icloud', 'chatgpt', 'assinatura', 'gympass', 'wellhub']],
+  ['educacao', ['faculdade', 'especializa', 'curso', 'escola', 'udemy', 'alura', 'livro', 'cursinho']],
+  ['saude', ['farmácia', 'farmacia', 'dentista', 'médico', 'medico', 'consulta', 'exame', 'remédio', 'remedio', 'hospital', 'plano de saúde', 'plano de saude', 'psicólogo', 'psicologo', 'terapia', 'academia']],
+  ['casa', ['aluguel', 'condomínio', 'condominio', 'energia', 'enel', 'conta de luz', 'água', 'agua', 'saneamento', 'internet', 'fibra', 'wifi', 'gás', 'iptu', 'reforma', 'limpeza']],
+  ['transporte', ['uber', '99', 'posto', 'gasolina', 'combustível', 'combustivel', 'metro', 'metrô', 'ônibus', 'onibus', 'estacionamento', 'pedágio', 'pedagio', 'taxi', 'táxi', 'passagem', 'bilhete']],
+  ['lazer', ['cinema', 'show', 'jogo', 'passeio', 'viagem', 'parque', 'teatro', 'festa', 'ingresso', 'steam', 'barzinho']],
+  ['despesasPessoais', ['roupa', 'camiseta', 'tênis', 'tenis', 'shopping', 'shein', 'fone', 'celular', 'presente', 'cabelo', 'salão', 'salao', 'barbeiro', 'cosmético', 'cosmetico', 'sapato']],
+  ['alimentacao', ['ifood', 'pizza', 'hambúrguer', 'hamburguer', 'restaurante', 'mercado', 'supermercado', 'padaria', 'feira', 'lanche', 'comida', 'almoço', 'almoco', 'jantar', 'café', 'cafe', 'açaí', 'acai', 'delivery', 'rappi', 'sorvete', 'açougue', 'acougue', 'burger', 'mcdonald', 'sushi']],
+];
+
+const INCOME_KEYWORDS: Array<[string, string[]]> = [
+  ['salario', ['salário', 'salario', 'pagamento', 'holerite', 'pró-labore', 'pro-labore', 'pro labore']],
+  ['extra', ['freela', 'freelance', 'bico', 'extra', 'comissão', 'comissao', 'venda', 'reembolso', 'cashback']],
+];
+
+/** Sugere a categoria pela descrição; devolve '' quando nenhuma palavra-chave bate. */
+export function suggestCategory(description: string, kind: TransactionKind): string {
+  const text = ` ${description.toLowerCase()} `;
+  const table = kind === 'receita' ? INCOME_KEYWORDS : EXPENSE_KEYWORDS;
+  for (const [slug, keywords] of table) {
+    if (keywords.some((k) => text.includes(k))) return slug;
+  }
+  return '';
+}

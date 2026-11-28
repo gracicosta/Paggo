@@ -1,7 +1,8 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { CustomTooltip } from "./Tooltip";
 import styles from './MonthlyChart.module.css';
-import { useFinance } from '../../../context/FinanceContext';
+import { useMonthFinance } from '../../../context/FinanceContext';
+import { monthLabel } from '../../../utils/dates';
 
 const margin = {
   top: 20,
@@ -11,7 +12,9 @@ const margin = {
 };
 
 export function MonthlyChart() {
-  const { monthlyChartData } = useFinance();
+  // Evolução do ano inteiro, das mesmas transações que alimentam o painel
+  const { series } = useMonthFinance(monthLabel(), 12);
+  const monthlyChartData = series.map((m) => ({ month: m.label, receitas: m.receitas, despesas: m.despesas }));
 
   return (
     <section className={styles.containerGraphic}>

@@ -1,61 +1,102 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { AuthUser, SignupDetails, UserFinancialProfile } from '../types/auth';
 import * as authService from '../services/authService';
+
+export type GoogleLoginOutcome =
+  | { status: 'logged_in'; user: AuthUser }
+  | { status: 'needs_signup'; profile: { name: string; email: string } };
 
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
-  login: (email: string, pass: string) => boolean;
-  register: (name: string, email: string, pass: string, details?: SignupDetails) => AuthUser;
-  isEmailRegistered: (email: string) => boolean;
-  isCpfRegistered: (cpf: string) => boolean;
-  saveFinancialProfile: (profile: UserFinancialProfile) => void;
+  login: (email: string, pass: string) => Promise<boolean>;
+  loginWithGoogle: (payload: {
+    accessToken?: string;
+    mockProfile?: { name: string; email: string };
+  }) => Promise<GoogleLoginOutcome>;
+  register: (name: string, email: string, pass: string, details?: SignupDetails) => Promise<AuthUser>;
+  isEmailRegistered: (email: string) => Promise<boolean>;
+  isCpfRegistered: (cpf: string) => Promise<boolean>;
+  saveFinancialProfile: (profile: UserFinancialProfile) => Promise<void>;
   logout: () => void;
-  loginAsDemo: () => void;
+  loginAsDemo: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * Estado de quem está logado. Ler e gravar contas fica em services/authService.ts
- * (hoje no navegador, amanhã na API Node).
+ * (integrado à API Node.js + PostgreSQL, com fallback em localStorage).
  */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(authService.readActiveUser);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(() => authService.hasBackendToken());
 
   const persistUser = (newUser: AuthUser | null) => {
     setUser(newUser);
     authService.writeActiveUser(newUser);
   };
 
-  const loginAsDemo = () => persistUser(authService.buildDemoUser());
+  useEffect(() => {
+    if (!authService.hasBackendToken()) return;
+    let active = true;
+    authService
+      .fetchCurrentSessionUser()
+      .then((sessionUser) => {
+        if (!active) return;
+        persistUser(sessionUser);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const login = (email: string, _pass: string): boolean => {
-    void _pass;
-    const found = authService.findAccountByEmail(email);
-    if (found) {
-      persistUser(found);
-      return true;
-    }
-    if (authService.isDemoEmail(email)) {
-      loginAsDemo();
+  const loginAsDemo = async () => {
+    const demoUser = await authService.loginAsDemoRemote();
+    persistUser(demoUser);
+  };
+
+  const login = async (email: string, pass: string): Promise<boolean> => {
+    const loggedUser = await authService.loginRemote(email, pass);
+    if (loggedUser) {
+      persistUser(loggedUser);
       return true;
     }
     return false;
   };
 
-  const register = (name: string, email: string, _pass: string, details?: SignupDetails): AuthUser => {
-    void _pass; // a senha não é guardada no navegador (veja authService)
-    const newUser = authService.createAccount(name, email, details);
+  const loginWithGoogle = async (payload: {
+    accessToken?: string;
+    mockProfile?: { name: string; email: string };
+  }): Promise<GoogleLoginOutcome> => {
+    const outcome = await authService.loginWithGoogleRemote(payload);
+    if (outcome.status === 'logged_in') {
+      persistUser(outcome.user);
+    }
+    return outcome;
+  };
+
+  const register = async (
+    name: string,
+    email: string,
+    pass: string,
+    details?: SignupDetails,
+  ): Promise<AuthUser> => {
+    const newUser = await authService.registerRemote(name, email, pass, details);
     persistUser(newUser);
     return newUser;
   };
 
-  const saveFinancialProfile = (profile: UserFinancialProfile) => {
+  const saveFinancialProfile = async (profile: UserFinancialProfile) => {
     if (!user) return;
-    persistUser(authService.saveProfile(user, profile));
+    const optimistic = authService.saveProfile(user, profile);
+    persistUser(optimistic);
+    const synced = await authService.saveProfileRemote(user, profile);
+    persistUser(synced);
   };
 
   const logout = () => persistUser(null);
@@ -66,9 +107,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isLoading,
         login,
+        loginWithGoogle,
         register,
-        isEmailRegistered: authService.isEmailRegistered,
-        isCpfRegistered: authService.isCpfRegistered,
+        isEmailRegistered: authService.checkEmailRegisteredRemote,
+        isCpfRegistered: authService.checkCpfRegisteredRemote,
         saveFinancialProfile,
         logout,
         loginAsDemo,

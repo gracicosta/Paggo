@@ -5,10 +5,14 @@ import { TransactionsPage } from '../../../pages/Transactions/TransactionsPage';
 import { LimitsPage } from '../../../pages/Transactions/LimitsPage';
 import { GoalsPage } from '../../../pages/Goals/GoalsPage';
 import type { TransactionsView } from '../../../pages/Transactions/components/ViewTabs';
-import { loadPrefs } from '../../../services/prefsService';
+import { usePrefs } from '../../../hooks/usePrefs';
 import { useThemePreference } from '../../../hooks/useThemePreference';
 import { useStoredPage } from '../../../hooks/useStoredPage';
-import type { PaletteId } from '../../../types/prefs';
+import { useFinance, useMonthFinance } from '../../../context/FinanceContext';
+import { useGoals } from '../../../hooks/useGoals';
+import { AssistantChat } from '../../ai/AssistantChat';
+import { buildAiUiContext } from '../../../services/aiService';
+import { FONT_STEPS } from '../../../constants/palettes';
 import { monthLabel } from '../../../utils/dates';
 import styles from './HomeLayout.module.css';
 
@@ -22,12 +26,27 @@ const TX_VIEWS = ['lancamentos', 'limites'] as const satisfies readonly Transact
  */
 export function HomeLayout() {
   const [dark, toggleTheme] = useThemePreference();
-  // Cores dos gráficos escolhidas no onboarding (passo 2). A troca fica na tela de Configurações.
-  const [palette] = useState<PaletteId>(() => loadPrefs().palette ?? 'padrao');
+  // Acessibilidade (Slide 7): paleta, letra legível e tamanho da fonte reagem ao menu do topo
+  const { prefs } = usePrefs();
+  const palette = prefs.palette ?? 'padrao';
+  const fontScale = FONT_STEPS[Math.min(FONT_STEPS.length - 1, Math.max(0, prefs.fontStep))];
   const [month, setMonth] = useState(() => monthLabel());
   const [page, navigate] = useStoredPage(READY_PAGES, 'Dashboard');
   // Dentro de Transações: "Lançamentos" ou "Limites do mês" (também fica salvo para o F5)
   const [txView, changeTxView] = useStoredPage(TX_VIEWS, 'lancamentos', 'transactionsView');
+
+  // Assistente: respostas locais usam os mesmos números dos cards (mesmo sem API)
+  const { subscriptions, categoryBudgets } = useFinance();
+  const { totals: goalTotals } = useGoals(month);
+  const summary = useMonthFinance(month);
+  const focusGoal = [...goalTotals.active].sort((a, b) => a.left - b.left)[0];
+  const chatUi = buildAiUiContext({
+    income: summary.totalIn,
+    expense: summary.totalOut,
+    budgets: categoryBudgets,
+    subscriptionsTotal: subscriptions.reduce((acc, s) => acc + (s.price || 0), 0),
+    goal: focusGoal ? { title: focusGoal.title, left: focusGoal.left, progress: focusGoal.progress } : null,
+  });
 
   const openTransactions = (view: TransactionsView) => {
     changeTxView(view);
@@ -37,8 +56,9 @@ export function HomeLayout() {
   return (
     <div
       className={`${styles.shell} ${dark ? styles.dark : ''} ${palette !== 'padrao' ? styles[`pal_${palette}`] : ''} ${
-        page !== 'Dashboard' ? styles.scrollable : ''
-      }`}
+        prefs.readable ? styles.readable : ''
+      } ${page !== 'Dashboard' ? styles.scrollable : ''}`}
+      style={{ fontSize: `${Math.round(16 * fontScale)}px` }}
     >
       <div className={styles.inner}>
         <TopNav
@@ -68,6 +88,7 @@ export function HomeLayout() {
           />
         )}
       </div>
+      <AssistantChat ui={chatUi} />
     </div>
   );
 }

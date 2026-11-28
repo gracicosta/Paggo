@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import type { IconType } from 'react-icons';
-import { LuCrown, LuLightbulb, LuPlus, LuReceipt, LuSparkles, LuTarget, LuWallet } from 'react-icons/lu';
+import { LuCrown, LuLightbulb, LuPlus, LuReceipt, LuSparkles, LuTarget, LuTriangleAlert, LuWallet } from 'react-icons/lu';
 import { GoArrowRight } from 'react-icons/go';
 import { FaAmazon, FaQuestion } from 'react-icons/fa6';
 import { PiStudentBold } from 'react-icons/pi';
@@ -13,7 +14,10 @@ import { useFinance, useMonthFinance } from '../../context/FinanceContext';
 import { useGoals } from '../../hooks/useGoals';
 import { ALL_CATEGORIES } from '../../data/transactionCategories';
 import { CHART_MONTHS, PREMIUM_PRICE, userPlan } from '../../data/plans';
-import type { FixedBillItem } from '../../types/auth';
+import { buildLimitRows } from '../Transactions/limitUtils';
+import type { AiPlanAction, FixedBillItem } from '../../types/auth';
+import { AiPlanModal } from '../../components/ai/AiPlanModal';
+import { buildAiUiContext, fetchAiPlan } from '../../services/aiService';
 import { brl, pct, signedBrl } from '../../utils/format';
 import { Pill } from '../../components/finance/Pill';
 import { BalanceDelta, ExpenseCard, IncomeCard } from '../../components/finance/MonthCards';
@@ -52,12 +56,13 @@ const SUB_ICONS: Record<string, { icon: IconType; color: string }> = {
   amazon: { icon: FaAmazon, color: '#ff9900' },
 };
 
-const BILL_ORDER: Record<FixedBillItem['status'], number> = { Vencido: 0, 'Vence hoje': 1, Pendente: 2 };
-
+/** Selo do boleto calculado pelo dia de vencimento (o mesmo do GET /bills). */
 function billStatusText(bill: FixedBillItem) {
-  if (bill.status === 'Vencido') return { text: `Vencido · dia ${String(bill.dueDay).padStart(2, '0')}`, cls: styles.textBad };
-  if (bill.status === 'Vence hoje') return { text: 'Vence hoje', cls: styles.textWarn };
-  return { text: `Vence dia ${String(bill.dueDay).padStart(2, '0')}`, cls: '' };
+  const days = bill.dueDay - new Date().getDate();
+  if (days < 0) return { days, text: `Vencido há ${-days} ${days === -1 ? 'dia' : 'dias'}`, cls: styles.textBad };
+  if (days === 0) return { days, text: 'Vence hoje', cls: styles.textWarn };
+  if (days <= 5) return { days, text: `Vence em ${days} ${days === 1 ? 'dia' : 'dias'}`, cls: styles.textWarn };
+  return { days, text: `Vence dia ${String(bill.dueDay).padStart(2, '0')}`, cls: '' };
 }
 
 const GOAL_COLORS = ['#7c3aed', '#22c55e', '#f59e0b', '#3b82f6', '#ec4899'];
@@ -88,6 +93,8 @@ export function Dashboard({
     palette === 'padrao' ? ['#7c3aed', '#e879f9'] : [seriesColor(palette, dark, 0, ''), seriesColor(palette, dark, 0, '')];
   const { user } = useAuth();
   const { fixedBills, subscriptions } = useFinance();
+  // "Pedir plano à IA": abre a janela e busca as 3 ações (API ou plano local com os mesmos números)
+  const [aiPlan, setAiPlan] = useState<{ actions: AiPlanAction[]; loading: boolean; blocked?: string } | null>(null);
   // Cofrinhos: os mesmos dados (e contas) da aba Metas
   const { totals: goalTotals, canCreate: canCreateGoal } = useGoals(month);
   // Gráfico de evolução: últimos 3 meses no plano grátis, o ano todo no Premium
@@ -103,10 +110,17 @@ export function Dashboard({
   const chartData = series.map((m) => ({ mes: m.label, saldo: m.saldo }));
 
   const topCategories = [...categoryBudgets]
-    .sort((a, b) => b.spent / (b.limit || 1) - a.spent / (a.limit || 1))
+    .filter((c) => c.limit > 0)
+    .sort((a, b) => b.spent / b.limit - a.spent / a.limit)
     .slice(0, 5);
 
-  const bills = [...fixedBills].sort((a, b) => BILL_ORDER[a.status] - BILL_ORDER[b.status] || a.dueDay - b.dueDay).slice(0, 4);
+  // Alerta do topo: categorias que passaram de 80% do teto (warn) ou estouraram (bad) — Slide 1 e 4
+  const limitAlerts = buildLimitRows(categoryBudgets).filter((r) => r.status !== 'ok');
+
+  // Boletos do mais urgente (vencido há mais dias) ao mais distante
+  const bills = [...fixedBills]
+    .sort((a, b) => billStatusText(a).days - billStatusText(b).days)
+    .slice(0, 4);
   const subsTotal = subscriptions.reduce((acc, s) => acc + (s.price || 0), 0);
 
   // Insight: a meta mais próxima de terminar com o valor semanal sugerido
@@ -114,6 +128,20 @@ export function Dashboard({
   const weeksToGoal = focusGoal ? Math.ceil(focusGoal.left / WEEKLY_SAVING) : 0;
 
   const monthName = month.split(' ')[0].toLowerCase();
+
+  const askPlan = () => {
+    const ui = buildAiUiContext({
+      income: summary.totalIn,
+      expense: summary.totalOut,
+      budgets: categoryBudgets,
+      subscriptionsTotal: subsTotal,
+      goal: focusGoal ? { title: focusGoal.title, left: focusGoal.left, progress: focusGoal.progress } : null,
+    });
+    setAiPlan({ actions: [], loading: true });
+    void fetchAiPlan(ui).then((res) =>
+      setAiPlan((p) => (p ? { actions: res.actions, loading: false, blocked: res.blocked } : p)),
+    );
+  };
 
   return (
     <main className={styles.main}>
@@ -128,11 +156,40 @@ export function Dashboard({
           <button type="button" className={styles.btnSecondary} onClick={onNewTransaction}>
             <LuPlus size={17} /> Nova transação
           </button>
-          <button type="button" className={styles.btnPrimary}>
+          <button type="button" className={styles.btnPrimary} onClick={askPlan}>
             <LuSparkles size={17} /> Pedir plano à IA
           </button>
         </div>
       </motion.section>
+
+      {/* Alerta de limite: card destacado no topo quando uma categoria passa de 80% do teto */}
+      {limitAlerts.length > 0 && (
+        <motion.section {...fade(0)} className={styles.alerts} role="alert" aria-live="polite">
+          {limitAlerts.slice(0, 3).map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              className={`${styles.alertCard} ${a.status === 'bad' ? styles.alertBad : ''}`}
+              onClick={onOpenLimits}
+              title="Ver os limites do mês"
+            >
+              <LuTriangleAlert size={18} aria-hidden="true" />
+              <span>
+                <b>{a.label}</b>{' '}
+                {a.status === 'bad'
+                  ? `estourou o limite (Passou ${brl(-a.left, 0)})`
+                  : `passou de 80% do limite (Sobrou ${brl(a.left, 0)})`}
+              </span>
+              <GoArrowRight size={15} aria-hidden="true" />
+            </button>
+          ))}
+          {limitAlerts.length > 3 && (
+            <button type="button" className={styles.alertMore} onClick={onOpenLimits}>
+              +{limitAlerts.length - 3} {limitAlerts.length - 3 === 1 ? 'categoria' : 'categorias'}
+            </button>
+          )}
+        </motion.section>
+      )}
 
       <section className={styles.bento}>
         {/* Saldo + evolução */}
@@ -374,6 +431,8 @@ export function Dashboard({
           </div>
         </motion.article>
       </section>
+
+      {aiPlan && <AiPlanModal actions={aiPlan.actions} loading={aiPlan.loading} blocked={aiPlan.blocked} onClose={() => setAiPlan(null)} />}
     </main>
   );
 }

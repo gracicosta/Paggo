@@ -10,9 +10,10 @@ import {
   LuLock,
   LuMail,
   LuShield,
+  LuSparkles,
 } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
-import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
+import { isGoogleConfigured, isGoogleMockEnabled, signInWithGoogle, type GoogleProfile } from './googleAuth';
 import logo from '../../assets/images/paggo-logo.png';
 import photo from '../../assets/images/login-cofrinho.jpg';
 import { pageClassName } from './authPrefs';
@@ -33,7 +34,7 @@ const TEST_CREDENTIALS = {
 } as const;
 
 export const AuthPage: React.FC = () => {
-  const { login, loginAsDemo } = useAuth();
+  const { login, loginWithGoogle, loginAsDemo } = useAuth();
 
   // Preferências de acessibilidade: salvas no navegador e sincronizadas com Termos e Privacidade
   const { prefs, updatePrefs } = usePrefs();
@@ -46,6 +47,8 @@ export const AuthPage: React.FC = () => {
 
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleSignup, setGoogleSignup] = useState<GoogleProfile | null>(null);
 
@@ -68,19 +71,26 @@ export const AuthPage: React.FC = () => {
 
   const handleGoogle = async () => {
     resetMessages();
-    if (!isGoogleConfigured()) {
+    if (!isGoogleConfigured() && !isGoogleMockEnabled()) {
       setInfo(
-        'O login com Google ainda não foi configurado neste ambiente. Use o acesso de teste por e-mail e senha.',
+        'O login com Google ainda não foi configurado neste ambiente. Use o acesso de teste ou o Modo Demonstração.',
       );
       return;
     }
     setGoogleLoading(true);
     try {
-      const profile = await signInWithGoogle();
-      // Conta já existente neste navegador → entra. Se não existe, abre o cadastro já no
-      // passo 2 ("Sobre você") com nome e e-mail do Google preenchidos.
-      if (!login(profile.email, '')) {
-        setGoogleSignup(profile);
+      const result = await signInWithGoogle();
+      const outcome = await loginWithGoogle(
+        result.accessToken
+          ? { accessToken: result.accessToken }
+          : { mockProfile: { name: result.profile.name, email: result.profile.email } },
+      );
+      if (outcome.status === 'needs_signup') {
+        setGoogleSignup({
+          name: outcome.profile.name,
+          email: outcome.profile.email,
+          picture: result.profile.picture,
+        });
         switchMode('register');
       }
     } catch (e) {
@@ -90,7 +100,19 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleDemo = async () => {
+    resetMessages();
+    setDemoLoading(true);
+    try {
+      await loginAsDemo();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Não foi possível abrir o Modo Demonstração.');
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     resetMessages();
     const cleanEmail = email.trim().toLowerCase();
@@ -104,19 +126,25 @@ export const AuthPage: React.FC = () => {
       return;
     }
 
-    if (cleanEmail === TEST_CREDENTIALS.email && password === TEST_CREDENTIALS.password) {
-      persistRemember(cleanEmail);
-      loginAsDemo();
-      return;
-    }
+    setSubmitting(true);
+    try {
+      if (cleanEmail === TEST_CREDENTIALS.email && password === TEST_CREDENTIALS.password) {
+        persistRemember(cleanEmail);
+        await loginAsDemo();
+        return;
+      }
 
-    // Contas criadas neste navegador pelo "Criar conta grátis".
-    if (cleanEmail !== TEST_CREDENTIALS.email && login(cleanEmail, password)) {
-      persistRemember(cleanEmail);
-      return;
-    }
+      if (cleanEmail !== TEST_CREDENTIALS.email && (await login(cleanEmail, password))) {
+        persistRemember(cleanEmail);
+        return;
+      }
 
-    setError('E-mail ou senha incorretos. Confira os dados e tente de novo.');
+      setError('E-mail ou senha incorretos. Confira os dados e tente de novo.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível fazer login agora.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleForgot = () => {
@@ -323,10 +351,22 @@ export const AuthPage: React.FC = () => {
               </button>
             </div>
 
-            <button type="submit" className={styles.submitBtn}>
+            <button type="submit" className={styles.submitBtn} disabled={submitting}>
+              {submitting ? <LuLoader className={styles.spin} size={20} /> : null}
               Entrar <LuArrowRight size={20} aria-hidden="true" />
             </button>
           </form>
+
+          <button
+            type="button"
+            className={styles.demoBtn}
+            onClick={handleDemo}
+            disabled={demoLoading}
+            aria-busy={demoLoading}
+          >
+            {demoLoading ? <LuLoader className={styles.spin} size={18} /> : <LuSparkles size={18} aria-hidden="true" />}
+            Entrar no Modo Demonstração (1 clique)
+          </button>
 
           <p className={styles.switchText}>
             Ainda não tem conta?{' '}

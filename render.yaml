@@ -1,0 +1,44 @@
+# Deploy do backend Paggo no Render (Bloco 4 / Dia 7).
+# Frontend: Vercel ou Netlify apontando VITE_API_URL para a URL deste serviço.
+# Passos: conectar o repositório no Render -> ele lê este arquivo -> colar as envs marcadas sync:false.
+
+services:
+  - type: web
+    name: paggo-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && node dist/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: paggo-db
+          property: connectionString
+      - key: PORT
+        value: "3001"
+      # URL pública do frontend (ex.: https://paggo.vercel.app) — libera o CORS e o cookie HTTPS.
+      - key: CORS_ORIGIN
+        sync: false
+      # Segredos gerados uma vez — trocar em produção (Render gera com "Generate Value").
+      - key: JWT_SECRET
+        generateValue: true
+      - key: LGPD_ENCRYPTION_KEY
+        generateValue: true
+      - key: LGPD_HASH_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: ALLOW_GOOGLE_MOCK
+        value: "false"
+      # Chave do Gemini (AI Studio). Vazia = fallback local continua funcionando na demo.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: "gemini-2.0-flash"
+
+databases:
+  - name: paggo-db
+    plan: free
+    databaseName: paggo

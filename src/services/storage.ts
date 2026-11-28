@@ -14,6 +14,7 @@
 export const STORAGE_KEYS = {
   activeUser: 'consumiq_active_user',
   accounts: 'consumiq_registered_accounts',
+  authToken: 'paggo_auth_token',
   prefs: 'paggo_login_prefs',
   rememberEmail: 'paggo_remember_email',
   dashboardTheme: 'paggo_theme',

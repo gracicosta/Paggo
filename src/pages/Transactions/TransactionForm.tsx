@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { LuCheck, LuPencil, LuZap } from 'react-icons/lu';
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from '../../data/transactionCategories';
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS, suggestCategory } from '../../data/transactionCategories';
 import { toIsoDate } from '../../utils/dates';
 import type { PaletteId } from '../../types/prefs';
 import type { PaymentMethod, TransactionInput, TransactionKind } from '../../types/transactions';
@@ -30,6 +30,8 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
   const [kind, setKind] = useState<TransactionKind>(initial?.kind ?? 'despesa');
   const [cents, setCents] = useState(() => Math.round((initial?.amount ?? 0) * 100));
   const [category, setCategory] = useState(initial?.category ?? '');
+  /** true quando a pessoa escolheu a categoria no grid (senão a descrição sugere sozinha). */
+  const [catTouched, setCatTouched] = useState(Boolean(initial?.category));
   const [date, setDate] = useState(initial?.date ?? toIsoDate(new Date()));
   const [description, setDescription] = useState(initial?.description ?? '');
   const [method, setMethod] = useState<PaymentMethod>(initial?.method ?? (initial?.kind === 'receita' ? 'pix' : 'debito'));
@@ -49,6 +51,7 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
     if (k === kind) return;
     setKind(k);
     setCategory('');
+    setCatTouched(false);
     setImpulse(false);
     setMethod(k === 'receita' ? 'pix' : 'debito');
   };
@@ -56,6 +59,7 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
   const reset = () => {
     setCents(0);
     setCategory('');
+    setCatTouched(false);
     setDescription('');
     setDate(toIsoDate(new Date()));
     setImpulse(false);
@@ -132,7 +136,8 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
       )}
 
       <div className={styles.label} id={`${uid}-cat-label`}>
-        2 · Em quê?
+        2 · Em quê?{' '}
+        {category && !catTouched && <span className={styles.labelHint}>(sugestão automática)</span>}
       </div>
       <div
         id={`${uid}-cat`}
@@ -151,7 +156,10 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
               role="radio"
               aria-checked={category === c.id}
               className={`${styles.catBtn} ${category === c.id ? styles.catBtnOn : ''}`}
-              onClick={() => setCategory(c.id)}
+              onClick={() => {
+                setCategory(c.id);
+                setCatTouched(true);
+              }}
             >
               <span className={styles.catIcon} style={{ background: `${color}22`, color }}>
                 <Icon size={16} />
@@ -177,7 +185,13 @@ export function TransactionForm({ initial, variant, palette, dark, onSave, onCan
             placeholder="Descrição (opcional)"
             maxLength={60}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              const text = e.target.value;
+              setDescription(text);
+              // Categorização automática: enquanto a pessoa não escolheu no grid,
+              // a descrição decide a categoria (o mesmo mapa do servidor).
+              if (!catTouched) setCategory(suggestCategory(text, kind));
+            }}
           />
         </label>
       </div>

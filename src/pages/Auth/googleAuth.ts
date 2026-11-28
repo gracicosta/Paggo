@@ -1,14 +1,18 @@
 /**
- * Login com Google (Google Identity Services - fluxo OAuth 2.0 por token).
- *
- * O Client ID vem da variável de ambiente VITE_GOOGLE_CLIENT_ID (arquivo .env.local).
- * Sem ela, o botão "Entrar com Google" mostra um aviso em vez de abrir o pop-up.
+ * Login com Google (Google Identity Services - fluxo OAuth 2.0 por token)
+ * com fallback opcional de mock funcional para apresentação do Hackathon.
  */
 
 export interface GoogleProfile {
   name: string;
   email: string;
   picture?: string;
+}
+
+export interface GoogleSignInResult {
+  profile: GoogleProfile;
+  accessToken?: string;
+  isMock: boolean;
 }
 
 interface TokenResponse {
@@ -42,6 +46,9 @@ export const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string
 
 export const isGoogleConfigured = () => GOOGLE_CLIENT_ID.length > 0;
 
+export const isGoogleMockEnabled = () =>
+  (import.meta.env.VITE_ENABLE_GOOGLE_MOCK as string | undefined)?.trim() !== 'false';
+
 let scriptPromise: Promise<void> | null = null;
 
 function loadGoogleScript(): Promise<void> {
@@ -64,9 +71,21 @@ function loadGoogleScript(): Promise<void> {
   return scriptPromise;
 }
 
-/** Abre o pop-up do Google e devolve nome e e-mail da conta escolhida. */
-export async function signInWithGoogle(): Promise<GoogleProfile> {
+/**
+ * Abre o pop-up do Google (quando VITE_GOOGLE_CLIENT_ID estiver configurado)
+ * ou retorna uma conta Google simulada para o fluxo do Hackathon.
+ */
+export async function signInWithGoogle(): Promise<GoogleSignInResult> {
   if (!isGoogleConfigured()) {
+    if (isGoogleMockEnabled()) {
+      return {
+        isMock: true,
+        profile: {
+          name: 'Júlia Mendes',
+          email: 'julia.paggo@gmail.com',
+        },
+      };
+    }
     throw new Error('Login com Google ainda não configurado (falta VITE_GOOGLE_CLIENT_ID).');
   }
 
@@ -107,8 +126,12 @@ export async function signInWithGoogle(): Promise<GoogleProfile> {
   if (!data.email) throw new Error('A conta Google não informou um e-mail.');
 
   return {
-    name: data.name || data.email.split('@')[0],
-    email: data.email,
-    picture: data.picture,
+    isMock: false,
+    accessToken,
+    profile: {
+      name: data.name || data.email.split('@')[0],
+      email: data.email,
+      picture: data.picture,
+    },
   };
 }

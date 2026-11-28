@@ -69,6 +69,70 @@
   transform: scale(0.98);
 }
 
+/* Alerta de limite (80%+ / estourou): faixa destacada no topo, antes da grade */
+.alerts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: -6px 0 18px;
+}
+
+.alertCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: 1px solid #f59e0b66;
+  background: #f59e0b1a;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.2s;
+}
+
+.alertCard svg {
+  color: var(--warn);
+  flex: none;
+}
+
+.alertCard.alertBad {
+  border-color: #ef444466;
+  background: #ef44441a;
+}
+
+.alertCard.alertBad svg {
+  color: var(--bad);
+}
+
+.alertCard:hover {
+  filter: brightness(1.05);
+}
+
+.alertCard:active {
+  transform: scale(0.98);
+}
+
+.alertCard:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.alertMore {
+  border: none;
+  background: none;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--link);
+  cursor: pointer;
+}
+
+.alertMore:hover {
+  text-decoration: underline;
+}
+
 /* ---------- Grade em blocos ---------- */
 .bento {
   display: grid;

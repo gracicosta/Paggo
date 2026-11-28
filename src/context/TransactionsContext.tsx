@@ -4,7 +4,8 @@ import { useAuth } from './AuthContext';
 import { activeProfile } from '../data/defaultFinancialProfile';
 import type { Transaction, TransactionInput } from '../types/transactions';
 import { newId } from '../data/transactionSeed';
-import { loadTransactions, saveTransactions } from '../services/transactionsService';
+import { loadTransactions, loadTransactionsRemote, saveTransactions } from '../services/transactionsService';
+import { readAuthToken } from '../services/apiClient';
 
 interface TransactionsContextType {
   transactions: Transaction[];
@@ -34,6 +35,24 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     items = user ? loadTransactions(user, profile) : [];
     setState({ userId, items });
   }
+
+  // Sincronização com a API: com sessão ativa, a lista do servidor substitui o cache local
+  // (mas só se a pessoa não lançou nada enquanto a resposta chegava — s.items !== captured).
+  useEffect(() => {
+    if (!user || !readAuthToken()) return;
+    let cancelled = false;
+    const captured = items;
+    void loadTransactionsRemote(user, profile).then((remote) => {
+      if (cancelled) return;
+      setState((s) => (s.userId === userId && s.items === captured ? { ...s, items: remote } : s));
+    });
+    return () => {
+      cancelled = true;
+    };
+    // Só roda ao trocar de conta: `user`/`profile` mudam de identidade a cada save de perfil
+    // e a resposta é idempotente (PUT devolve a mesma lista).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   useEffect(() => {
     if (!user) return;

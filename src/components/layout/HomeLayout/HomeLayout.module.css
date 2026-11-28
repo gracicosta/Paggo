@@ -59,6 +59,14 @@
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
+/* Fonte de leitura facilitada (Slide 7): Lexend, desenhada para dislexia, espaçamento maior */
+.readable,
+.readable * {
+  font-family: 'Lexend', 'Plus Jakarta Sans', Verdana, system-ui, sans-serif;
+  letter-spacing: 0.015em !important;
+  word-spacing: 0.05em !important;
+}
+
 /* Modo para daltônicos: paleta Okabe-Ito (azul = bom, laranja/vermelhão = atenção) */
 /* Cores de alerta conforme a paleta escolhida no onboarding (daltonismo).
    Os sinais também têm ▲▼ e texto: a cor nunca é a única informação. */

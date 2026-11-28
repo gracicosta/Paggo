@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { LuCalendar, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
-import { toIsoDate } from '../../context/TransactionsContext';
+import { toIsoDate } from '../../utils/dates';
 import styles from './Transactions.module.css';
 
 const MONTHS_LONG = [

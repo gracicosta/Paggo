@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
+import { useTransactions } from '../context/TransactionsContext';
 import { FREE_GOALS, userPlan } from '../data/plans';
 import { buildGoalView, createGoal, goalTotals, withMove, type NewGoalInput } from '../data/goalSummary';
-import { monthKeys, monthLabel } from '../utils/dates';
+import { monthKeys, monthLabel, toIsoDate } from '../utils/dates';
 
 /**
  * Metas (cofrinhos) da pessoa logada, já com as contas feitas, e as ações de mexer nelas.
@@ -14,6 +15,9 @@ import { monthKeys, monthLabel } from '../utils/dates';
 export function useGoals(month = monthLabel()) {
   const { user } = useAuth();
   const { piggyBanks, savePiggyBanks } = useFinance();
+  // Aporte/resgate viram transação: o valor sai do saldo do mês (ou volta nele),
+  // então Dashboard, Transações e cofrinho mostram sempre os mesmos números.
+  const { addTransaction } = useTransactions();
   const plan = userPlan(user);
   const keys = monthKeys(month);
   const monthKey = keys.current;
@@ -24,7 +28,21 @@ export function useGoals(month = monthLabel()) {
   /** No grátis cabem FREE_GOALS metas em andamento; as concluídas não contam. */
   const canCreate = plan === 'premium' || totals.active.length < FREE_GOALS;
 
-  const move = (id: number, amount: number) => savePiggyBanks(withMove(piggyBanks, id, amount));
+  const move = (id: number, amount: number) => {
+    const goal = piggyBanks.find((g) => g.id === id);
+    savePiggyBanks(withMove(piggyBanks, id, amount));
+    if (goal) {
+      addTransaction({
+        kind: amount >= 0 ? 'despesa' : 'receita',
+        amount: Math.abs(amount),
+        date: toIsoDate(new Date()),
+        description: amount >= 0 ? `Cofrinho: ${goal.title}` : `Resgate do cofrinho: ${goal.title}`,
+        category: amount >= 0 ? 'outros' : 'outrasEntradas',
+        method: 'deposito',
+        impulse: false,
+      });
+    }
+  };
 
   return {
     plan,

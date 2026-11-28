@@ -15,9 +15,7 @@ export function loadPrefs(): Prefs {
   };
   try {
     const raw = readText(PREFS_KEY);
-    // A troca de fonte (botão "Aa") saiu do login e do cadastro e vai para a tela de Configurações.
-    // Até ela existir, a fonte de leitura fica desligada para ninguém ficar preso nela sem botão para voltar.
-    return raw ? { ...fallback, ...JSON.parse(raw), readable: false } : fallback;
+    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
   } catch {
     return fallback;
   }

@@ -62,29 +62,29 @@ gantt
 
 #### ☀️ Dia 1 — Setup, Estrutura e Identidade
 - **Pessoa 1 (Back-end & DB):**
-  - [ ] Inicializar projeto backend Node.js (TypeScript, Express/Fastify).
-  - [ ] Provisionar banco PostgreSQL (local ou Supabase/Neon).
-  - [ ] Criar schema inicial: `User`, `Account`, `Category`, `Transaction`.
-  - [ ] Configurar variáveis de ambiente e `.env.example`.
+  - [x] Inicializar projeto backend Node.js (TypeScript, Express/Fastify).
+  - [x] Provisionar banco PostgreSQL (local ou Supabase/Neon).
+  - [x] Criar schema inicial: `User`, `Account`, `Category`, `Transaction`.
+  - [x] Configurar variáveis de ambiente e `.env.example`.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Alinhar o branding do app com o nome **Paggo** e slogan *"Seu dinheiro, simples de ver e fácil de planejar"*.
-  - [ ] Adaptar a paleta visual e tipografia para a identidade do slide (azul/clean, dark mode).
-  - [ ] Estruturar tela de Boas-Vindas com storytelling da Júlia ("Para onde foi meu dinheiro?").
+  - [x] Alinhar o branding do app com o nome **Paggo** e slogan *"Seu dinheiro, simples de ver e fácil de planejar"*.
+  - [x] Adaptar a paleta visual e tipografia para a identidade do slide (azul/clean, dark mode).
+  - [x] Estruturar tela de Boas-Vindas com storytelling da Júlia ("Para onde foi meu dinheiro?").
 - 🤝 **Ponto de Sincronização (Fim do Dia 1):** Validação da conexão entre Frontend e Backend e revisão do schema do banco.
 
 #### ☀️ Dia 2 — Autenticação Google & Onboarding Simplificado
 - **Pessoa 1 (Back-end & DB):**
-  - [ ] Implementar autenticação via Google OAuth (ou mock funcional robusto para o hackathon).
-  - [ ] Criar endpoint `POST /api/onboarding` para salvar respostas iniciais do usuário.
-  - [ ] Regra de proteção LGPD: Criptografia de dados sensíveis; garantir que a IA nunca receba CPF ou dados identificáveis.
+  - [x] Implementar autenticação via Google OAuth (ou mock funcional robusto para o hackathon).
+  - [x] Criar endpoint `POST /api/onboarding` para salvar respostas iniciais do usuário.
+  - [x] Regra de proteção LGPD: Criptografia de dados sensíveis; garantir que a IA nunca receba CPF ou dados identificáveis.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Implementar botão *"Entrar com Google"* na tela de login.
-  - [ ] Desenvolver o Onboarding interativo em 4 passos rápidos (Slide 3):
+  - [x] Implementar botão *"Entrar com Google"* na tela de login.
+  - [x] Desenvolver o Onboarding interativo em 4 passos rápidos (Slide 3):
     1. **Entender:** Informar saldo e responder perguntas simples.
     2. **Visualizar:** Categorização automática prévia.
     3. **Controlar:** Definição inicial de tetos de gastos.
     4. **Planejar:** Definição da primeira meta de cofrinho.
-  - [ ] Adicionar atalho de 1 clique para Modo Demonstração (essencial para os jurados).
+  - [x] Adicionar atalho de 1 clique para Modo Demonstração (essencial para os jurados).
 - 🤝 **Ponto de Sincronização (Fim do Dia 2):** Testar fluxo ponta a ponta: Login Google $\to$ Onboarding $\to$ Redirecionamento ao Dashboard.
 
 ---

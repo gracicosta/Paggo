@@ -62,29 +62,29 @@ gantt
 
 #### ☀️ Dia 1 — Setup, Estrutura e Identidade
 - **Pessoa 1 (Back-end & DB):**
-  - [ ] Inicializar projeto backend Node.js (TypeScript, Express/Fastify).
-  - [ ] Provisionar banco PostgreSQL (local ou Supabase/Neon).
-  - [ ] Criar schema inicial: `User`, `Account`, `Category`, `Transaction`.
-  - [ ] Configurar variáveis de ambiente e `.env.example`.
+  - [x] Inicializar projeto backend Node.js (TypeScript, Express/Fastify).
+  - [x] Provisionar banco PostgreSQL (local ou Supabase/Neon).
+  - [x] Criar schema inicial: `User`, `Account`, `Category`, `Transaction`.
+  - [x] Configurar variáveis de ambiente e `.env.example`.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Alinhar o branding do app com o nome **Paggo** e slogan *"Seu dinheiro, simples de ver e fácil de planejar"*.
-  - [ ] Adaptar a paleta visual e tipografia para a identidade do slide (azul/clean, dark mode).
-  - [ ] Estruturar tela de Boas-Vindas com storytelling da Júlia ("Para onde foi meu dinheiro?").
+  - [x] Alinhar o branding do app com o nome **Paggo** e slogan *"Seu dinheiro, simples de ver e fácil de planejar"*.
+  - [x] Adaptar a paleta visual e tipografia para a identidade do slide (azul/clean, dark mode).
+  - [x] Estruturar tela de Boas-Vindas com storytelling da Júlia ("Para onde foi meu dinheiro?").
 - 🤝 **Ponto de Sincronização (Fim do Dia 1):** Validação da conexão entre Frontend e Backend e revisão do schema do banco.
 
 #### ☀️ Dia 2 — Autenticação Google & Onboarding Simplificado
 - **Pessoa 1 (Back-end & DB):**
-  - [ ] Implementar autenticação via Google OAuth (ou mock funcional robusto para o hackathon).
-  - [ ] Criar endpoint `POST /api/onboarding` para salvar respostas iniciais do usuário.
-  - [ ] Regra de proteção LGPD: Criptografia de dados sensíveis; garantir que a IA nunca receba CPF ou dados identificáveis.
+  - [x] Implementar autenticação via Google OAuth (ou mock funcional robusto para o hackathon).
+  - [x] Criar endpoint `POST /api/onboarding` para salvar respostas iniciais do usuário.
+  - [x] Regra de proteção LGPD: Criptografia de dados sensíveis; garantir que a IA nunca receba CPF ou dados identificáveis.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Implementar botão *"Entrar com Google"* na tela de login.
-  - [ ] Desenvolver o Onboarding interativo em 4 passos rápidos (Slide 3):
+  - [x] Implementar botão *"Entrar com Google"* na tela de login.
+  - [x] Desenvolver o Onboarding interativo em 4 passos rápidos (Slide 3):
     1. **Entender:** Informar saldo e responder perguntas simples.
     2. **Visualizar:** Categorização automática prévia.
     3. **Controlar:** Definição inicial de tetos de gastos.
     4. **Planejar:** Definição da primeira meta de cofrinho.
-  - [ ] Adicionar atalho de 1 clique para Modo Demonstração (essencial para os jurados).
+  - [x] Adicionar atalho de 1 clique para Modo Demonstração (essencial para os jurados).
 - 🤝 **Ponto de Sincronização (Fim do Dia 2):** Testar fluxo ponta a ponta: Login Google $\to$ Onboarding $\to$ Redirecionamento ao Dashboard.
 
 ---
@@ -94,28 +94,28 @@ gantt
 
 #### ☀️ Dia 3 — Dashboard Humanizado & Categorização
 - **Pessoa 1 (Back-end & DB):**
-  - [ ] Endpoints de métricas: `GET /api/dashboard/summary` (entradas, saídas, saldo restante).
-  - [ ] CRUD de transações com categorização automática (Alimentação, Lazer, Transporte, Casa, Saúde).
-  - [ ] Endpoint de evolução mensal de gastos.
+  - [x] Endpoints de métricas: `GET /api/dashboard/summary` (entradas, saídas, saldo restante).
+  - [x] CRUD de transações com categorização automática (Alimentação, Lazer, Transporte, Casa, Saúde).
+  - [x] Endpoint de evolução mensal de gastos.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Aplicar o dicionário de linguagem simples (*"O Paggo fala a sua língua"* - Slide 5):
+  - [x] Aplicar o dicionário de linguagem simples (*"O Paggo fala a sua língua"* - Slide 5):
     - Substituir *Fluxo de Caixa* por **"Quanto entrou e quanto saiu"**.
     - Substituir *Receitas* por **"Dinheiro que entrou"**.
     - Substituir *Saldo* por **"Quanto você tem"**.
     - Substituir *Rentabilidade Líquida* por **"Quanto sobrou"**.
-  - [ ] Montar visualização gráfica da distribuição de gastos em barras/pizza (Recharts).
+  - [x] Montar visualização gráfica da distribuição de gastos em barras/pizza (Recharts).
 - 🤝 **Ponto de Sincronização (Fim do Dia 3):** Conferir se os valores exibidos nos cards e gráficos batem exatamente com as somas do banco de dados.
 
 #### ☀️ Dia 4 — Alerta de 80% de Limite, Assinaturas e Boletos
 - **Pessoa 1 (Back-end & DB):**
-  - [ ] Criar lógica de monitoramento de tetos: calcular `spent / limit`.
-  - [ ] Trigger de alerta quando categoria atingir $\ge 80\%$ do teto.
-  - [ ] Endpoint de Boletos (com cálculo de dias para vencimento) e Assinaturas (custo mensal e projeção anual).
+  - [x] Criar lógica de monitoramento de tetos: calcular `spent / limit`.
+  - [x] Trigger de alerta quando categoria atingir $\ge 80\%$ do teto.
+  - [x] Endpoint de Boletos (com cálculo de dias para vencimento) e Assinaturas (custo mensal e projeção anual).
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Implementar o card de alerta visual destacado no topo do Dashboard:
+  - [x] Implementar o card de alerta visual destacado no topo do Dashboard:
     - ⚠️ **"Delivery passou de 80% do limite (Sobrou R$ 420)"** (conforme Slide 1 e 4).
-  - [ ] Seção de Assinaturas: exibir quanto o usuário paga por mês e por ano (Slide 6).
-  - [ ] Seção de Boletos com badges contextuais (`Pendente`, `Vence hoje`, `Vencido há 2 dias`).
+  - [x] Seção de Assinaturas: exibir quanto o usuário paga por mês e por ano (Slide 6).
+  - [x] Seção de Boletos com badges contextuais (`Pendente`, `Vence hoje`, `Vencido há 2 dias`).
 - 🤝 **Ponto de Sincronização (Fim do Dia 4):** Simulação de um gasto de delivery que dispara o alerta visual de 80% em tempo real na tela.
 
 ---
@@ -125,25 +125,25 @@ gantt
 
 #### ☀️ Dia 5 — Cofrinho Interativo & Motor de IA para Plano
 - **Pessoa 1 (Back-end & IA):**
-  - [ ] Endpoints do Cofrinho: criar meta, consultar progresso e realizar aporte (`POST /api/piggy-bank/:id/deposit`).
-  - [ ] Integração com a API do Google Gemini (ou OpenAI):
+  - [x] Endpoints do Cofrinho: criar meta, consultar progresso e realizar aporte (`POST /api/piggy-bank/:id/deposit`).
+  - [x] Integração com a API do Google Gemini (ou OpenAI):
     - Desenvolver prompt estruturado para o **Plano com IA**: recebe o saldo, despesas por categoria e a meta do cofrinho, retornando um plano de ação claro, com valores e prazos (ex.: *"Corte R$ 120 de delivery e você chega na viagem em outubro"*).
     - Higienização LGPD: Enviar apenas números e categorias para a IA, sem dados nominais.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Componente visual de Cofrinhos com metas temáticas (Viagem, Reserva de Emergência, Casa Própria).
-  - [ ] Interatividade de "Encher o cofrinho": botão de aporte rápido que deduz do saldo e anima o cofrinho enchendo.
-  - [ ] Botão de destaque no Dashboard: *"Gerar meu Plano com IA"*.
+  - [x] Componente visual de Cofrinhos com metas temáticas (Viagem, Reserva de Emergência, Casa Própria).
+  - [x] Interatividade de "Encher o cofrinho": botão de aporte rápido que deduz do saldo e anima o cofrinho enchendo.
+  - [x] Botão de destaque no Dashboard: *"Gerar meu Plano com IA"*.
 - 🤝 **Ponto de Sincronização (Fim do Dia 5):** Clicar em "Gerar Plano", aguardar a resposta da API do Gemini e exibir o plano formatado em cards de ação prática.
 
 #### ☀️ Dia 6 — Assistente de IA Humanizado (Chat sem Termos Difíceis)
 - **Pessoa 1 (Back-end & IA):**
-  - [ ] Endpoint de chat: `POST /api/assistant/chat`.
-  - [ ] System prompt com guardrails:
+  - [x] Endpoint de chat: `POST /api/assistant/chat`.
+  - [x] System prompt com guardrails:
     - Persona do assistente: amigável, direto, proibido usar termos difíceis como "CDI", "EBITDA", "amortização", "fluxo de caixa".
     - Respostas curtas em linguagem coloquial acessível para a Júlia e para a Dona Lúcia.
 - **Pessoa 2 (Front-end & UX):**
-  - [ ] Widget ou modal de chat flutuante do Assistente do Paggo.
-  - [ ] Sugestões de perguntas rápidas prontas em balões:
+  - [x] Widget ou modal de chat flutuante do Assistente do Paggo.
+  - [x] Sugestões de perguntas rápidas prontas em balões:
     - *"Posso pedir pizza hoje?"*
     - *"Quanto falta para minha meta da viagem?"*
     - *"O que acontece se eu atrasar meu boleto de luz?"*
@@ -156,19 +156,19 @@ gantt
 
 #### ☀️ Dia 7 — Modelo Freemium, Inclusão & Deploy
 - **Pessoa 1 (Back-end & DevOps):**
-  - [ ] Implementar middleware com as regras Freemium (Slide 8):
+  - [x] Implementar middleware com as regras Freemium (Slide 8):
     - **Grátis (R$ 0):** Até 3 limites, 1 cofrinho, 1 plano de IA/mês, 10 perguntas ao assistente.
     - **Premium (R$ 14,90/mês):** Limites ilimitados, IA ilimitada, histórico completo.
-  - [ ] Deploy do Backend (Render / Railway / Fly.io) e Banco de Dados gerenciado.
-  - [ ] Configuração de CORS, variáveis de produção e SSL.
+  - [ ] Deploy do Backend (Render / Railway / Fly.io) e Banco de Dados gerenciado. _(render.yaml pronto; pendente de credenciais)_
+  - [x] Configuração de CORS, variáveis de produção e SSL. _(CORS por env com múltiplas origens; SSL vem do Render/Vercel)_
 - **Pessoa 2 (Front-end, Design & Acessibilidade):**
-  - [ ] Modal/Banner de Upgrade para o Paggo Premium (R$ 14,90/mês).
-  - [ ] Barra de ferramentas de **Acessibilidade** (Slide 7):
+  - [x] Modal/Banner de Upgrade para o Paggo Premium (R$ 14,90/mês). _(trava de cofrinho na aba Metas + aviso de cota da IA no modal do plano e no chat)_
+  - [x] Barra de ferramentas de **Acessibilidade** (Slide 7):
     - [x] Alternador de Modo Escuro / Claro.
-    - [ ] Seletor de tamanho de fonte (Padrão / Grande para Dona Lúcia).
-    - [ ] Filtro/modo de alto contraste e cores para daltônicos.
-    - [ ] Suporte à fonte amigável para dislexia (OpenDyslexic / Lexend).
-  - [ ] Deploy do Frontend (Vercel ou Netlify) conectado à API de produção.
+    - [x] Seletor de tamanho de fonte (Padrão / Grande para Dona Lúcia).
+    - [x] Filtro/modo de alto contraste e cores para daltônicos.
+    - [x] Suporte à fonte amigável para dislexia (OpenDyslexic / Lexend).
+  - [ ] Deploy do Frontend (Vercel ou Netlify) conectado à API de produção. _(vercel.json pronto; pendente de credenciais)_
 - 🤝 **Ponto de Sincronização (Fim do Dia 7):** Acessar o app em um link público HTTPS no celular e no computador e testar os recursos de acessibilidade.
 
 ---

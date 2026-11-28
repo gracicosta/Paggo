@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthProvider {
+  email
+  google
+}
+
+enum UserPlan {
+  free
+  premium
+}
+
+enum AccountType {
+  checking
+  wallet
+  savings
+}
+
+enum TransactionKind {
+  receita
+  despesa
+}
+
+enum PaymentMethod {
+  pix
+  debito
+  credito
+  dinheiro
+  boleto
+  deposito
+}
+
+model User {
+  id                 String        @id @default(cuid())
+  name               String
+  email              String        @unique
+  passwordHash       String?       @map("password_hash")
+  provider           AuthProvider  @default(email)
+  googleSub          String?       @unique @map("google_sub")
+
+  // Proteção LGPD: dados identificáveis sensíveis criptografados (AES-256-GCM)
+  cpfEncrypted       String?       @map("cpf_encrypted")
+  cpfHash            String?       @unique @map("cpf_hash")
+  birthDateEncrypted String?       @map("birth_date_encrypted")
+  termsAcceptedAt    DateTime?     @map("terms_accepted_at")
+
+  isConfigured       Boolean       @default(false) @map("is_configured")
+  plan               UserPlan      @default(free)
+
+  // Perfil financeiro do onboarding
+  salary             Decimal       @default(0) @db.Decimal(12, 2)
+  extraIncome        Decimal       @default(0) @db.Decimal(12, 2) @map("extra_income")
+  fixedBills         Json          @default("[]") @map("fixed_bills")
+  subscriptions      Json          @default("[]")
+  piggyBanks         Json          @default("[]") @map("piggy_banks")
+  onboardingAnswers  Json?         @map("onboarding_answers")
+
+  accounts           Account[]
+  categories         Category[]
+  transactions       Transaction[]
+
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Account {
+  id           String        @id @default(cuid())
+  userId       String        @map("user_id")
+  name         String
+  type         AccountType   @default(checking)
+  balance      Decimal       @default(0) @db.Decimal(12, 2)
+  currency     String        @default("BRL")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  userId       String        @map("user_id")
+  slug         String
+  name         String
+  monthlyLimit Decimal       @default(0) @db.Decimal(12, 2) @map("monthly_limit")
+  color        String        @default("#7c3aed")
+  background   String        @default("#EDE9FE")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@map("categories")
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String          @map("user_id")
+  accountId   String?         @map("account_id")
+  categoryId  String?         @map("category_id")
+  kind        TransactionKind
+  amount      Decimal         @db.Decimal(12, 2)
+  date        DateTime
+  description String
+  method      PaymentMethod   @default(pix)
+  impulse     Boolean         @default(false)
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account     Account?        @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  category    Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId, date])
+  @@map("transactions")
+}

@@ -16,7 +16,7 @@ import {
   LuEyeOff,
 } from 'react-icons/lu';
 import { useAuth } from '../../context/AuthContext';
-import { isGoogleConfigured, signInWithGoogle, type GoogleProfile } from './googleAuth';
+import { isGoogleConfigured, isGoogleMockEnabled, signInWithGoogle, type GoogleProfile } from './googleAuth';
 import { pageClassName } from './authPrefs';
 import { FONT_STEPS } from '../../constants/palettes';
 import { isValidEmail } from '../../utils/validation';
@@ -63,7 +63,7 @@ interface SignupPageProps {
  * A renda não é pedida aqui: ela fica no onboarding financeiro, que abre logo depois.
  */
 export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, onGoToLogin, googleProfile }) => {
-  const { register, login, isEmailRegistered, isCpfRegistered } = useAuth();
+  const { register, loginWithGoogle, isEmailRegistered, isCpfRegistered } = useAuth();
 
   const [step, setStep] = useState<Step>(googleProfile ? 2 : 1);
   const [google, setGoogle] = useState<GoogleProfile | null>(googleProfile ?? null);
@@ -86,6 +86,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
   const [serverError, setServerError] = useState<Partial<Record<FieldName, string>>>({});
   const [alert, setAlert] = useState<{ type: 'error' | 'info'; text: string } | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const titleRef = useRef<HTMLHeadingElement>(null);
   const firstRender = useRef(true);
@@ -141,7 +142,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
 
   const handleGoogle = async () => {
     setAlert(null);
-    if (!isGoogleConfigured()) {
+    if (!isGoogleConfigured() && !isGoogleMockEnabled()) {
       setAlert({
         type: 'info',
         text: 'O cadastro com Google ainda não foi configurado neste ambiente. Use seu e-mail e uma senha.',
@@ -150,12 +151,16 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
     }
     setGoogleLoading(true);
     try {
-      const profile = await signInWithGoogle();
-      // Já tem conta com esse e-mail → só entra.
-      if (login(profile.email, '')) return;
-      setGoogle(profile);
-      setEmail(profile.email);
-      setName((current) => current || profile.name);
+      const result = await signInWithGoogle();
+      const outcome = await loginWithGoogle(
+        result.accessToken
+          ? { accessToken: result.accessToken }
+          : { mockProfile: { name: result.profile.name, email: result.profile.email } },
+      );
+      if (outcome.status === 'logged_in') return;
+      setGoogle(result.profile);
+      setEmail(outcome.profile.email);
+      setName((current) => current || outcome.profile.name);
       setStep(2);
     } catch (e) {
       setAlert({ type: 'error', text: e instanceof Error ? e.message : 'Não foi possível usar o Google agora.' });
@@ -164,7 +169,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
     }
   };
 
-  const handleStep1 = (e: React.FormEvent) => {
+  const handleStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
     setAlert(null);
     setTouched((t) => ({ ...t, email: true, password: true, confirm: true }));
@@ -173,15 +178,20 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
       focusFirstInvalid(STEP_FIELDS[1]);
       return;
     }
-    if (isEmailRegistered(cleanEmail)) {
-      setServerError((se) => ({ ...se, email: 'Já existe uma conta com esse e-mail.' }));
-      document.getElementById('signup-email')?.focus();
-      return;
+    setSubmitting(true);
+    try {
+      if (await isEmailRegistered(cleanEmail)) {
+        setServerError((se) => ({ ...se, email: 'Já existe uma conta com esse e-mail.' }));
+        document.getElementById('signup-email')?.focus();
+        return;
+      }
+      setStep(2);
+    } finally {
+      setSubmitting(false);
     }
-    setStep(2);
   };
 
-  const handleStep2 = (e: React.FormEvent) => {
+  const handleStep2 = async (e: React.FormEvent) => {
     e.preventDefault();
     setAlert(null);
     setTouched((t) => ({ ...t, name: true, cpf: true, birth: true, terms: true }));
@@ -191,19 +201,28 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
       return;
     }
     const cpfDigits = onlyDigits(cpf);
-    if (isCpfRegistered(cpfDigits)) {
-      setServerError((se) => ({ ...se, cpf: 'Esse CPF já tem uma conta no Paggo.' }));
-      document.getElementById('signup-cpf')?.focus();
-      return;
-    }
+    setSubmitting(true);
+    try {
+      if (await isCpfRegistered(cpfDigits)) {
+        setServerError((se) => ({ ...se, cpf: 'Esse CPF já tem uma conta no Paggo.' }));
+        document.getElementById('signup-cpf')?.focus();
+        return;
+      }
 
-    // Cria a conta. O App.tsx percebe o usuário novo e abre o onboarding financeiro (onde entra a renda).
-    register(normalizeName(name), google?.email ?? cleanEmail, google ? '' : password, {
-      cpf: cpfDigits,
-      birthDate: toIsoDate(birth),
-      termsAcceptedAt: new Date().toISOString(),
-      provider: google ? 'google' : 'email',
-    });
+      await register(normalizeName(name), google?.email ?? cleanEmail, google ? '' : password, {
+        cpf: cpfDigits,
+        birthDate: toIsoDate(birth),
+        termsAcceptedAt: new Date().toISOString(),
+        provider: google ? 'google' : 'email',
+      });
+    } catch (err) {
+      setAlert({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Não foi possível criar sua conta agora.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleBack = () => {
@@ -489,7 +508,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
                     ))}
                 </div>
 
-                <button type="submit" className={styles.submitBtn}>
+                <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                  {submitting ? <LuLoader className={styles.spin} size={20} /> : null}
                   Continuar <LuArrowRight size={20} aria-hidden="true" />
                 </button>
               </form>
@@ -642,7 +662,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ prefs, onPrefsChange, on
                 <button type="button" className={s.backBtn} onClick={handleBack}>
                   <LuArrowLeft size={18} aria-hidden="true" /> Voltar
                 </button>
-                <button type="submit" className={`${styles.submitBtn} ${s.createBtn}`}>
+                <button type="submit" className={`${styles.submitBtn} ${s.createBtn}`} disabled={submitting}>
+                  {submitting ? <LuLoader className={styles.spin} size={20} /> : null}
                   Criar minha conta <LuArrowRight size={20} aria-hidden="true" />
                 </button>
               </div>

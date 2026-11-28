@@ -109,7 +109,7 @@ export const OnboardingPage: React.FC = () => {
   };
 
   const finish = () => {
-    saveFinancialProfile(toFinancialProfile(state, buildAiPlan(state)));
+    void saveFinancialProfile(toFinancialProfile(state, buildAiPlan(state)));
     clearDraft(userId);
   };
 
